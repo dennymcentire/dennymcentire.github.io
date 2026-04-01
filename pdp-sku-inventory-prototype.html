@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDP — SKU Inventory (Partner Fulfillment)</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,700;0,900&display=swap" rel="stylesheet">
+<style>
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #e8e8e8;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 32px 16px 48px;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+.nav-row {
+  width: 415px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #252525;
+  color: white;
+  text-decoration: none;
+  border-radius: 24px;
+  padding: 8px 16px;
+  transition: background 0.2s;
+}
+.back-link:hover { background: #444; }
+
+.page-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #888;
+}
+
+/* ── Product tabs ─────────────────────────────── */
+.product-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.product-tab {
+  padding: 8px 18px;
+  border-radius: 24px;
+  border: none;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #d0d0d0;
+  color: #555;
+  transition: background 0.15s, color 0.15s;
+}
+.product-tab.active {
+  background: #252525;
+  color: white;
+}
+
+/* ── Product views ────────────────────────────── */
+.product-view { display: none; flex-direction: column; align-items: center; }
+.product-view.active { display: flex; }
+
+/* ── Mode toggle ──────────────────────────────── */
+.mode-toggle-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+.mode-toggle-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #888;
+}
+.mode-toggle {
+  display: flex;
+  background: #d0d0d0;
+  border-radius: 24px;
+  padding: 3px;
+  gap: 2px;
+}
+.mode-btn {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: none;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  color: #666;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.mode-btn.active {
+  background: white;
+  color: #252525;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+/* ── Select mode: attribute chips become buttons ─ */
+.mode-select .size-btn {
+  cursor: pointer;
+  border: 1.5px solid #c5c5c5;
+  background: white;
+  color: #252525;
+  height: 40px;
+  min-width: 48px;
+  padding: 0 12px;
+  border-radius: 6px;
+  pointer-events: auto;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.mode-select .size-btn:hover:not(.oos) {
+  border-color: #252525;
+}
+.mode-select .size-btn.selected {
+  background: #252525;
+  border-color: #252525;
+  color: white;
+}
+.mode-select .size-btn.oos {
+  background: #f7f7f7;
+  border-color: #e0e0e0;
+  color: #c5c5c5;
+  cursor: default;
+  pointer-events: none;
+}
+/* hide info note and tooltip in select mode */
+.mode-select .avail-note { display: none; }
+.mode-select .size-tooltip { display: none !important; }
+
+/* select mode header */
+.select-header { display: none; }
+.mode-select .select-header {
+  display: block;
+  margin-bottom: 12px;
+}
+.select-header-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #252525;
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.select-header-note {
+  font-size: 12px;
+  color: #9d9d9d;
+}
+
+/* info icon + tooltip */
+.info-icon-btn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: #252525;
+  position: relative;
+}
+.info-icon-btn:hover { color: #555; }
+
+.info-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 240px;
+  background: #3a3a3a;
+  color: white;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.45;
+  border-radius: 8px;
+  padding: 10px 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  z-index: 50;
+  text-align: left;
+  pointer-events: none;
+}
+.info-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #3a3a3a;
+}
+.info-icon-btn.open .info-tooltip { display: block; }
+
+/* ── Accordion mode ───────────────────────────── */
+/* accordion header hidden by default (info/select modes) */
+.accordion-header { display: none; }
+
+/* attrs-body always visible in info/select modes */
+.attrs-body { display: block; }
+
+.mode-accordion .avail-note { display: none; }
+.mode-accordion .size-tooltip { display: none !important; }
+
+/* show accordion header, hide attrs-body until open */
+.mode-accordion .accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 4px;
+  padding: 12px 14px;
+  background: #f4f4f4;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #252525;
+  text-align: left;
+}
+.mode-accordion .accordion-header:active { background: #ececec; }
+
+.accordion-chevron {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+.mode-accordion .attrs-wrapper.open .accordion-chevron {
+  transform: rotate(180deg);
+}
+
+.mode-accordion .attrs-body {
+  display: none;
+  padding-top: 14px;
+}
+.mode-accordion .attrs-wrapper.open .attrs-body {
+  display: block;
+}
+
+/* sizes inside accordion body use interactive select styling */
+.mode-accordion .attrs-body .size-btn {
+  cursor: pointer;
+  border: 1.5px solid #c5c5c5;
+  background: white;
+  color: #252525;
+  height: 40px;
+  min-width: 48px;
+  padding: 0 12px;
+  border-radius: 6px;
+  pointer-events: auto;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.mode-accordion .attrs-body .size-btn:hover:not(.oos) {
+  border-color: #252525;
+}
+.mode-accordion .attrs-body .size-btn.selected {
+  background: #252525;
+  border-color: #252525;
+  color: white;
+}
+.mode-accordion .attrs-body .size-btn.oos {
+  background: #f7f7f7;
+  border-color: #e0e0e0;
+  color: #c5c5c5;
+  cursor: default;
+  pointer-events: none;
+}
+.accordion-footer-note {
+  display: none;
+  font-size: 12px;
+  color: #9d9d9d;
+  margin-top: 14px;
+}
+.mode-accordion .accordion-footer-note { display: block; }
+
+/* ── Phone ─────────────────────────────────────── */
+.phone {
+  width: 375px;
+  background: white;
+  border-radius: 48px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 10px #1c1c1e,
+    0 0 0 12px #3a3a3c,
+    0 28px 64px rgba(0,0,0,0.45);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 812px;
+}
+
+.phone::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 28px;
+  background: #1c1c1e;
+  border-radius: 0 0 20px 20px;
+  z-index: 100;
+}
+
+/* ── Nav Bar ──────────────────────────────────── */
+.nav-bar {
+  background: white;
+  box-shadow: 0 2px 18px rgba(0,0,0,0.14);
+  flex-shrink: 0;
+  z-index: 20;
+  padding-top: 28px;
+}
+
+.nav-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-bottom: 1px solid #e3e3e3;
+}
+
+.ev-logo {
+  width: 22px; height: 22px;
+  background: #fc4540;
+  border-radius: 70px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.search-bar {
+  flex: 1;
+  background: #f7f7f7;
+  border: 1px solid #c5c5c5;
+  border-radius: 21px;
+  padding: 8px 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.search-bar span { font-size: 14px; font-weight: 600; color: #757575; }
+
+.nav-icons { display: flex; }
+.icon-btn {
+  position: relative;
+  width: 42px; height: 42px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+}
+.badge {
+  position: absolute; top: 4px; right: 4px;
+  min-width: 16px; height: 16px;
+  background: #e32a27; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: white; padding: 0 4px;
+}
+
+.nav-categories {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 18px; background: white;
+}
+.nav-cat {
+  height: 46px; display: flex; align-items: center;
+  font-size: 15px; font-weight: 600; color: #252525;
+}
+
+/* ── Scrollable Content ───────────────────────── */
+.pdp-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+.pdp-scroll::-webkit-scrollbar { display: none; }
+
+.pdp-body { padding: 12px 18px 40px; }
+
+/* ── Breadcrumb ───────────────────────────────── */
+.breadcrumb {
+  font-size: 14px;
+  color: #0e5dbd;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.breadcrumb .sep { color: #9d9d9d; margin: 0 6px; }
+
+/* ── Product Header ───────────────────────────── */
+.product-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.brand-name { font-size: 15px; color: #0e5dbd; margin-bottom: 3px; }
+.product-name { font-size: 18px; font-weight: 700; color: #252525; line-height: 1.25; }
+
+.fav-btn {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: rgba(0,0,0,0.05);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; cursor: pointer; border: none;
+}
+
+/* Partner tag */
+.partner-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #757575;
+  margin: 4px 0 8px;
+  font-style: italic;
+}
+
+/* Badges + rating row */
+.badges-row {
+  display: flex; align-items: center; gap: 10px;
+  margin: 6px 0 4px;
+  flex-wrap: wrap;
+}
+.pill-badge {
+  background: #dbf8fb; border: 1px solid #00cddf;
+  border-radius: 6px; padding: 2px 8px;
+  font-size: 13px; font-weight: 600; color: #053c52;
+  white-space: nowrap;
+}
+.star-row { display: flex; align-items: center; gap: 3px; }
+.star { color: #ee5720; font-size: 12px; }
+.review-count { font-size: 13px; color: #0e5dbd; }
+
+/* Price row */
+.price-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.price-main { font-size: 27px; font-weight: 900; color: #252525; }
+.price-off { background: #e33e38; color: white; border-radius: 6px; padding: 1px 8px; font-size: 15px; font-weight: 600; }
+.price-msrp { font-size: 15px; color: #9d9d9d; text-decoration: line-through; }
+
+/* Product image */
+.product-image-wrap {
+  position: relative;
+  margin: 0 -18px;
+  width: calc(100% + 36px);
+  overflow: hidden;
+}
+.product-image-wrap img {
+  display: block; width: 100%;
+  transition: opacity 0.25s ease;
+}
+.image-dots {
+  display: flex; justify-content: center; gap: 6px;
+  padding: 8px 0 12px;
+}
+.dot { width: 8px; height: 8px; border-radius: 50%; background: #c5c5c5; }
+.dot.active { background: #252525; }
+
+/* ── Availability Check Section ───────────────── */
+.avail-section {
+  border: 1px solid #e3e3e3;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+  background: #fafafa;
+}
+
+
+.avail-note {
+  font-size: 13px;
+  color: #757575;
+  line-height: 1.4;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+/* Color */
+.option-label {
+  font-size: 15px; color: #252525; margin-bottom: 8px;
+}
+.option-label strong { font-weight: 700; }
+
+.color-swatches {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;
+}
+.swatch {
+  width: 36px; height: 36px; border-radius: 4px;
+  overflow: hidden; position: relative; cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.1s;
+}
+.swatch:hover { transform: scale(1.08); }
+.swatch.focused {
+  outline: 2.5px solid #252525;
+  outline-offset: 2px;
+}
+.swatch-color {
+  width: 100%; height: 100%;
+  display: block;
+}
+.swatch.out-of-stock .swatch-color { opacity: 0.35; }
+.swatch.out-of-stock::after {
+  content: '';
+  position: absolute; top: 50%; left: 50%;
+  width: 48px; height: 1.5px;
+  background: rgba(0,0,0,0.5);
+  border-top: 1px solid rgba(255,255,255,0.5);
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* Size */
+.size-guide-link {
+  font-size: 13px;
+  color: #0e5dbd;
+  text-decoration: none;
+  font-weight: 600;
+}
+.size-guide-link:hover { text-decoration: underline; }
+
+.size-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.size-btns {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.size-btn {
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: none;
+  background: #ebebeb;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 13px; font-weight: 600; color: #444;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ── Size tooltip ─────────────────────────────── */
+.size-tooltip-wrap {
+  position: relative;
+  margin-top: 10px;
+}
+.size-tooltip {
+  display: none;
+  background: #3a3a3a;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: white;
+  line-height: 1.4;
+  position: relative;
+}
+.size-tooltip.visible { display: flex; align-items: flex-start; gap: 10px; }
+.size-tooltip-text { flex: 1; }
+.size-tooltip-close {
+  flex-shrink: 0;
+  background: none; border: none; cursor: pointer;
+  color: rgba(255,255,255,0.6);
+  font-size: 16px; line-height: 1;
+  padding: 0; margin-top: -1px;
+}
+.size-tooltip-close:hover { color: white; }
+.size-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -6px; left: 16px;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #3a3a3a;
+}
+.size-btn.oos {
+  background: transparent;
+  color: #b8b8b8;
+  text-decoration: line-through;
+  text-decoration-color: #c5c5c5;
+}
+
+
+/* ── Purchase Redirect Box ────────────────────── */
+.purchase-box {
+  border: 1px solid #e3e3e3;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+  background: white;
+}
+
+.purchase-price-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
+}
+.purchase-price { font-size: 22px; font-weight: 900; color: #252525; }
+.purchase-off { background: #e33e38; color: white; border-radius: 6px; padding: 1px 7px; font-size: 13px; font-weight: 600; }
+.purchase-msrp { font-size: 13px; color: #9d9d9d; text-decoration: line-through; }
+
+.purchase-meta {
+  font-size: 13px; color: #757575; margin-bottom: 14px;
+}
+
+.purchase-features {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.purchase-feature {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #444;
+}
+
+/* ── Visit Button ─────────────────────────────── */
+.visit-btn {
+  width: 100%;
+  height: 56px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #ee5720;
+  color: white;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  transition: background 0.2s;
+  text-decoration: none;
+}
+.visit-btn:active { background: #d44c1a; }
+
+.visit-disclaimer {
+  font-size: 12px; color: #9d9d9d;
+  text-align: center; margin-top: 8px;
+  line-height: 1.4;
+}
+
+</style>
+</head>
+<body>
+
+<div class="nav-row">
+</div>
+
+<div class="mode-toggle-wrap" id="mode-toggle-wrap">
+  <span class="mode-toggle-label">Attribute display mode</span>
+  <div class="mode-toggle">
+    <button class="mode-btn active" data-mode="select" onclick="setMode('select')">User selection</button>
+    <button class="mode-btn" data-mode="accordion" onclick="setMode('accordion')">Accordion</button>
+    <button class="mode-btn" data-mode="info" onclick="setMode('info')">Availability preview</button>
+  </div>
+</div>
+
+<div class="product-tabs" id="product-tabs">
+  <button class="product-tab active" onclick="switchTab('jacket')">Rain Jacket</button>
+  <button class="product-tab" onclick="switchTab('shoe')">Running Shoe</button>
+</div>
+
+<div class="product-view active" id="view-jacket">
+<div class="phone" id="phone">
+
+  <!-- Nav Bar -->
+  <div class="nav-bar">
+    <div class="nav-top">
+      <div class="ev-logo">
+        <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
+          <path d="M7.5 1L1 8h5l-1.5 5L11 6H6.5L7.5 1z" fill="white"/>
+        </svg>
+      </div>
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="6.5" cy="6.5" r="5" stroke="#757575" stroke-width="1.5"/>
+          <path d="M10.5 10.5L14 14" stroke="#757575" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span>Search brands &amp; more</span>
+      </div>
+      <div class="nav-icons">
+        <div class="icon-btn">
+          <svg width="14" height="18" viewBox="0 0 14 18" fill="none">
+            <path d="M7 0C5.9 0 5 0.9 5 2C2.2 2.7 0 5.2 0 8V13L2 15V16C2 17.1 2.9 18 4 18H10C11.1 18 12 17.1 12 16V15L14 13V8C14 5.2 11.8 2.7 9 2C9 0.9 8.1 0 7 0ZM7 1C7.55 1 8 1.45 8 2H6C6 1.45 6.45 1 7 1ZM7 16C6.45 16 6 15.55 6 15H8C8 15.55 7.55 16 7 16Z" fill="#252525"/>
+          </svg>
+          <div class="badge">1</div>
+        </div>
+        <div class="icon-btn">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M1 1H3L4 4M4 4L6 12H14L16 4H4Z" stroke="#252525" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="7" cy="15" r="1.5" fill="#252525"/>
+            <circle cx="13" cy="15" r="1.5" fill="#252525"/>
+          </svg>
+          <div class="badge">3</div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-categories">
+      <div class="nav-cat">Home</div>
+      <div class="nav-cat">Brands</div>
+      <div class="nav-cat">Shop</div>
+      <div class="nav-cat">
+        <div style="width:26px;height:26px;border-radius:50%;background:#c5c5c5;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scrollable PDP content -->
+  <div class="pdp-scroll">
+    <div class="pdp-body">
+
+      <!-- Breadcrumb -->
+      <div class="breadcrumb">
+        <span>...</span>
+        <span class="sep">/</span>
+        <span>Men's Rain Jackets</span>
+      </div>
+
+      <!-- Product header -->
+      <div class="product-header">
+        <div style="flex:1;min-width:0;">
+          <div class="brand-name">Outdoor Research</div>
+          <div class="product-name">Men's Foray 3L Rain Jacket</div>
+        </div>
+        <button class="fav-btn" aria-label="Favorite">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 15.5C9 15.5 1.5 11 1.5 5.5C1.5 3.57 3.07 2 5 2C6.54 2 7.86 2.95 8.5 4.28C9.14 2.95 10.46 2 12 2C13.93 2 15.5 3.57 15.5 5.5C15.5 11 9 15.5 9 15.5Z" stroke="#252525" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Partner note -->
+      <!-- Badges + rating -->
+      <div class="badges-row">
+        <span class="pill-badge">Trending</span>
+        <div class="star-row">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <span class="review-count">81 reviews</span>
+      </div>
+
+      <!-- Price -->
+      <div class="price-row">
+        <span class="price-main">$104.00</span>
+        <span class="price-off">60% Off</span>
+        <span class="price-msrp">$260.00 MSRP</span>
+      </div>
+
+      <!-- Product image -->
+      <div class="product-image-wrap">
+        <img id="product-img" src="3220880360E1.webp" alt="Men's Foray 3L Rain Jacket" style="display:block;width:100%;height:220px;object-fit:cover;object-position:top;">
+        <div class="image-dots">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+      </div>
+
+      <!-- Availability Check -->
+      <div class="avail-section" style="margin-top:12px;">
+
+        <div class="select-header">
+          <div class="select-header-title">
+            Check options &amp; availability
+            <button class="info-icon-btn" id="jacket-info-btn" aria-label="Availability info">
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                <circle cx="7.5" cy="7.5" r="6.5" stroke="currentColor" stroke-width="1.3"/>
+                <path d="M7.5 6.5v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                <circle cx="7.5" cy="4.8" r="0.75" fill="currentColor"/>
+              </svg>
+              <div class="info-tooltip">Inventory is updated regularly, but things change fast. All options are subject to availability on the partner site.</div>
+            </button>
+          </div>
+          <div class="select-header-note">Purchased on outdoorresearch.com · your selections won't carry over.</div>
+        </div>
+
+        <div class="avail-note">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;margin-top:1px;">
+            <circle cx="7" cy="7" r="6" stroke="#9d9d9d" stroke-width="1.2"/>
+            <path d="M7 6v4" stroke="#9d9d9d" stroke-width="1.2" stroke-linecap="round"/>
+            <circle cx="7" cy="4.5" r="0.7" fill="#9d9d9d"/>
+          </svg>
+          Explore color and size availability below. You'll make your final selection on Outdoor Research's site.
+        </div>
+
+        <!-- Color -->
+        <div class="option-label">Color: <strong id="color-label">Atlantic</strong></div>
+        <div class="color-swatches" id="color-swatches">
+          <!-- injected by JS -->
+        </div>
+
+        <div class="attrs-wrapper" id="jacket-attrs-wrapper">
+          <button class="accordion-header" id="jacket-accordion-header">
+            Check options &amp; availability
+            <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M4 6l4 4 4-4" stroke="#252525" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="attrs-body">
+            <!-- Size -->
+            <div class="size-label-row">
+              <div class="option-label" style="margin-bottom:0;">Size <a class="size-guide-link" href="#">Size guide</a></div>
+            </div>
+            <div class="size-btns" id="size-btns">
+              <!-- injected by JS -->
+            </div>
+
+            <div class="size-tooltip-wrap">
+              <div class="size-tooltip" id="size-tooltip">
+                <span class="size-tooltip-text">Size selection happens on Outdoor Research's site. Use this page to check what's available before you visit.</span>
+                <button class="size-tooltip-close" id="size-tooltip-close" aria-label="Dismiss">&#x2715;</button>
+              </div>
+            </div>
+            <div class="accordion-footer-note">Purchased on outdoorresearch.com · your selections won't carry over.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Purchase box -->
+      <div class="purchase-box">
+        <div class="purchase-price-row">
+          <span class="purchase-price">$104.00</span>
+          <span class="purchase-off">60% Off</span>
+          <span class="purchase-msrp">$260.00 MSRP</span>
+        </div>
+        <div class="purchase-meta">Expert Deal · All options subject to availability on partner site</div>
+        <div class="purchase-features">
+          <div class="purchase-feature">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M2 8H14M14 8L10 4M14 8L10 12" stroke="#2d9c5a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Flat rate shipping $13.95
+          </div>
+          <div class="purchase-feature">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 5h10l-1 7H4L3 5z" stroke="#2d9c5a" stroke-width="1.3" stroke-linejoin="round"/>
+              <path d="M5.5 5V3.5A1.5 1.5 0 0 1 7 2h2a1.5 1.5 0 0 1 1.5 1.5V5" stroke="#2d9c5a" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+            Returns accepted
+          </div>
+        </div>
+
+        <a class="visit-btn" href="https://www.outdoorresearch.com/products/mens-foray-3l-jacket-322088?variant=50611812729153&gad_source=1&gad_campaignid=17242027829&gbraid=0AAAAADrjZqlVbq61-Hw3uuB-g9siZK91B&gclid=Cj0KCQjwj47OBhCmARIsAF5wUEEZkSAyBvPIpEKNROC9l7w2T7rZBn5pc6yqWf6Klu8r-FRXKGgmn8YaArTNEALw_wcB" target="_blank">
+          Visit Outdoor Research
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M5 2h7v7M12 2L2 12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /.phone -->
+</div><!-- /#view-jacket -->
+
+<!-- ── Shoe product view ───────────────────────────────────────────────── -->
+<div class="product-view" id="view-shoe">
+<div class="phone">
+
+  <!-- Nav Bar -->
+  <div class="nav-bar">
+    <div class="nav-top">
+      <div class="ev-logo">
+        <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
+          <path d="M7.5 1L1 8h5l-1.5 5L11 6H6.5L7.5 1z" fill="white"/>
+        </svg>
+      </div>
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="6.5" cy="6.5" r="5" stroke="#757575" stroke-width="1.5"/>
+          <path d="M10.5 10.5L14 14" stroke="#757575" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span>Search brands &amp; more</span>
+      </div>
+      <div class="nav-icons">
+        <div class="icon-btn">
+          <svg width="14" height="18" viewBox="0 0 14 18" fill="none">
+            <path d="M7 0C5.9 0 5 0.9 5 2C2.2 2.7 0 5.2 0 8V13L2 15V16C2 17.1 2.9 18 4 18H10C11.1 18 12 17.1 12 16V15L14 13V8C14 5.2 11.8 2.7 9 2C9 0.9 8.1 0 7 0ZM7 1C7.55 1 8 1.45 8 2H6C6 1.45 6.45 1 7 1ZM7 16C6.45 16 6 15.55 6 15H8C8 15.55 7.55 16 7 16Z" fill="#252525"/>
+          </svg>
+          <div class="badge">1</div>
+        </div>
+        <div class="icon-btn">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M1 1H3L4 4M4 4L6 12H14L16 4H4Z" stroke="#252525" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="7" cy="15" r="1.5" fill="#252525"/>
+            <circle cx="13" cy="15" r="1.5" fill="#252525"/>
+          </svg>
+          <div class="badge">3</div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-categories">
+      <div class="nav-cat">Home</div>
+      <div class="nav-cat">Brands</div>
+      <div class="nav-cat">Shop</div>
+      <div class="nav-cat">
+        <div style="width:26px;height:26px;border-radius:50%;background:#c5c5c5;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scrollable PDP content -->
+  <div class="pdp-scroll">
+    <div class="pdp-body">
+
+      <div class="breadcrumb">
+        <span>...</span>
+        <span class="sep">/</span>
+        <span>Men's Running Shoes</span>
+      </div>
+
+      <div class="product-header">
+        <div style="flex:1;min-width:0;">
+          <div class="brand-name">Brooks Running</div>
+          <div class="product-name">Men's Adrenaline GTS 25</div>
+        </div>
+        <button class="fav-btn" aria-label="Favorite">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 15.5C9 15.5 1.5 11 1.5 5.5C1.5 3.57 3.07 2 5 2C6.54 2 7.86 2.95 8.5 4.28C9.14 2.95 10.46 2 12 2C13.93 2 15.5 3.57 15.5 5.5C15.5 11 9 15.5 9 15.5Z" stroke="#252525" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="badges-row">
+        <span class="pill-badge">Trending</span>
+        <div class="star-row">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star" style="color:#c5c5c5;">★</span>
+        </div>
+        <span class="review-count">25 reviews</span>
+      </div>
+
+      <div class="price-row">
+        <span class="price-main">$90.00</span>
+        <span class="price-off">40% Off</span>
+        <span class="price-msrp">$150.00 MSRP</span>
+      </div>
+
+      <div class="product-image-wrap">
+        <img src="https://cdn.expertvoice.com/io/client/mfg/brooks/images/product/src/sc.736.736.bf/110454_090_L.jpg" alt="Men's Adrenaline GTS 25" style="display:block;width:100%;height:220px;object-fit:cover;object-position:center;">
+        <div class="image-dots">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+      </div>
+
+      <div class="avail-section" style="margin-top:12px;">
+
+        <div class="select-header">
+          <div class="select-header-title">
+            Check options &amp; availability
+            <button class="info-icon-btn" id="shoe-info-btn" aria-label="Availability info">
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                <circle cx="7.5" cy="7.5" r="6.5" stroke="currentColor" stroke-width="1.3"/>
+                <path d="M7.5 6.5v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                <circle cx="7.5" cy="4.8" r="0.75" fill="currentColor"/>
+              </svg>
+              <div class="info-tooltip">Inventory is updated regularly, but things change fast. All options are subject to availability on the partner site.</div>
+            </button>
+          </div>
+          <div class="select-header-note">Purchased on brooksrunning.com · your selections won't carry over.</div>
+        </div>
+
+        <div class="avail-note">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;margin-top:1px;">
+            <circle cx="7" cy="7" r="6" stroke="#9d9d9d" stroke-width="1.2"/>
+            <path d="M7 6v4" stroke="#9d9d9d" stroke-width="1.2" stroke-linecap="round"/>
+            <circle cx="7" cy="4.5" r="0.7" fill="#9d9d9d"/>
+          </svg>
+          Explore color, size, and width availability below. You'll make your final selection on Brooks Running's site.
+        </div>
+
+        <!-- Color -->
+        <div class="option-label">Color: <strong id="shoe-color-label">Black/Grey/White</strong></div>
+        <div class="color-swatches" id="shoe-color-swatches"></div>
+
+        <div class="attrs-wrapper" id="shoe-attrs-wrapper">
+          <button class="accordion-header" id="shoe-accordion-header">
+            Check options &amp; availability
+            <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M4 6l4 4 4-4" stroke="#252525" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="attrs-body">
+            <!-- Size -->
+            <div class="size-label-row">
+              <div class="option-label" style="margin-bottom:0;">Size <a class="size-guide-link" href="#">Size guide</a></div>
+            </div>
+            <div class="size-btns" id="shoe-size-btns"></div>
+
+            <!-- Width -->
+            <div class="option-label" style="margin-top:14px;">Width</div>
+            <div class="size-btns" id="shoe-width-btns"></div>
+
+            <div class="size-tooltip-wrap">
+              <div class="size-tooltip" id="shoe-size-tooltip">
+                <span class="size-tooltip-text">Size and width selection happens on Brooks Running's site. Use this page to check what's available before you visit.</span>
+                <button class="size-tooltip-close" id="shoe-size-tooltip-close" aria-label="Dismiss">&#x2715;</button>
+              </div>
+            </div>
+            <div class="accordion-footer-note">Purchased on brooksrunning.com · your selections won't carry over.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="purchase-box">
+        <div class="purchase-price-row">
+          <span class="purchase-price">$90.00</span>
+          <span class="purchase-off">40% Off</span>
+          <span class="purchase-msrp">$150.00 MSRP</span>
+        </div>
+        <div class="purchase-meta">Expert Deal · All options subject to availability on partner site</div>
+        <div class="purchase-features">
+          <div class="purchase-feature">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M2 8H14M14 8L10 4M14 8L10 12" stroke="#2d9c5a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Free shipping on orders over $50
+          </div>
+          <div class="purchase-feature">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 5h10l-1 7H4L3 5z" stroke="#2d9c5a" stroke-width="1.3" stroke-linejoin="round"/>
+              <path d="M5.5 5V3.5A1.5 1.5 0 0 1 7 2h2a1.5 1.5 0 0 1 1.5 1.5V5" stroke="#2d9c5a" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+            Returns accepted
+          </div>
+        </div>
+        <a class="visit-btn" href="https://www.brooksrunning.com/en_us/mens/shoes/road-running-shoes/adrenaline-gts-25/1104541D036.125.html?tid=sem%3AGOOGLE%3AUSA%7CGoogle%7CShopping%7CBrand%7CFootwear%7CActive%20Evaluators%3AFootwear%3A_shopping&gclsrc=aw.ds&gad_source=1&gad_campaignid=23011678042&gbraid=0AAAAAD--avBJMbHhDSRChboXAaa1WRWqj&gclid=Cj0KCQjwj47OBhCmARIsAF5wUEERqS-UH2JHIWGkmB02TxLhnu-_8V59ZsxjGXFLG91upfm4UUhw-BsaAsoEEALw_wcB" target="_blank">
+          Visit Brooks Running
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M5 2h7v7M12 2L2 12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /.phone -->
+</div><!-- /#view-shoe -->
+
+<script>
+// ── Inventory data ─────────────────────────────────────────────────────────
+// Each color: { name, css, image (color swatch bg), available sizes }
+// Sizes: XS S M L XL XXL XXXL
+// true = in stock, false = out of stock
+
+const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+
+const COLORS = [
+  {
+    id: 'atlantic',
+    name: 'Atlantic',
+    swatch: '#2d5c7c',
+    imgBg: 'linear-gradient(160deg, #1a3f5c 0%, #2d7ca8 100%)',
+    stock: { XS: true,  S: true,  M: true,  L: true,  XL: true,  XXL: true,  XXXL: false }
+  },
+  {
+    id: 'black',
+    name: 'Black',
+    swatch: '#232323',
+    imgBg: 'linear-gradient(160deg, #111 0%, #3a3a3a 100%)',
+    stock: { XS: true,  S: true,  M: true,  L: true,  XL: true,  XXL: true,  XXXL: false }
+  },
+  {
+    id: 'red',
+    name: 'Firetail',
+    swatch: '#c0392b',
+    imgBg: 'linear-gradient(160deg, #8b1a1a 0%, #c0392b 100%)',
+    stock: { XS: false, S: true,  M: true,  L: true,  XL: true,  XXL: false, XXXL: false }
+  },
+  {
+    id: 'tan',
+    name: 'Sand',
+    swatch: '#c8a97a',
+    imgBg: 'linear-gradient(160deg, #a07848 0%, #dbc49a 100%)',
+    stock: { XS: true,  S: true,  M: true,  L: true,  XL: true,  XXL: false, XXXL: false }
+  },
+  {
+    id: 'dark-tan',
+    name: 'Desert',
+    swatch: '#8a6843',
+    imgBg: 'linear-gradient(160deg, #5c4428 0%, #9c7a52 100%)',
+    stock: { XS: false, S: true,  M: true,  L: true,  XL: true,  XXL: false, XXXL: false }
+  },
+  {
+    id: 'olive',
+    name: 'Loden',
+    swatch: '#6b7c4a',
+    imgBg: 'linear-gradient(160deg, #4a5a28 0%, #8a9a5a 100%)',
+    stock: { XS: false, S: true,  M: true,  L: true,  XL: true,  XXL: true,  XXXL: false }
+  },
+  {
+    id: 'dark-olive',
+    name: 'Ranger Green',
+    swatch: '#4a5436',
+    imgBg: 'linear-gradient(160deg, #2e3422 0%, #5c6840 100%)',
+    stock: { XS: false, S: true,  M: true,  L: true,  XL: false, XXL: false, XXXL: false }
+  },
+  {
+    id: 'steel-blue',
+    name: 'Cenote',
+    swatch: '#4a7aaa',
+    imgBg: 'linear-gradient(160deg, #2a508a 0%, #5a8aba 100%)',
+    stock: { XS: false, S: true,  M: true,  L: true,  XL: true,  XXL: false, XXXL: false }
+  },
+  {
+    id: 'charcoal',
+    name: 'Pewter',
+    swatch: '#686868',
+    imgBg: 'linear-gradient(160deg, #404040 0%, #808080 100%)',
+    stock: { XS: false, S: false, M: true,  L: true,  XL: true,  XXL: true,  XXXL: false }
+  },
+  {
+    id: 'navy',
+    name: 'Abyss',
+    swatch: '#1a2a5c',
+    imgBg: 'linear-gradient(160deg, #0e1a3e 0%, #253a7a 100%)',
+    stock: { XS: false, S: true,  M: true,  L: true,  XL: true,  XXL: true,  XXXL: false }
+  },
+  {
+    id: 'lime',
+    name: 'Torch',
+    swatch: '#8aaa1a',
+    imgBg: 'linear-gradient(160deg, #1c1c1c 0%, #587a10 50%, #8aaa1a 100%)',
+    stock: { XS: true,  S: true,  M: true,  L: true,  XL: true,  XXL: false, XXXL: false }
+  },
+  {
+    id: 'burgundy',
+    name: 'Mahogany',
+    swatch: '#6a1a2a',
+    imgBg: 'linear-gradient(160deg, #3e0e18 0%, #8a2a3a 100%)',
+    stock: { XS: false, S: true,  M: true,  L: true,  XL: false, XXL: false, XXXL: false }
+  }
+];
+
+// ── State ──────────────────────────────────────────────────────────────────
+let displayMode = 'select'; // 'info' | 'select' | 'accordion'
+let focusedColorId = 'atlantic';
+let selectedJacketSize = null;
+
+// ── Render helpers ─────────────────────────────────────────────────────────
+function getColor(id) {
+  return COLORS.find(c => c.id === id);
+}
+
+function stockCount(colorId) {
+  const c = getColor(colorId);
+  return SIZES.filter(s => c.stock[s]).length;
+}
+
+function renderSwatches() {
+  const wrap = document.getElementById('color-swatches');
+  wrap.innerHTML = '';
+  COLORS.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'swatch' + (c.id === focusedColorId ? ' focused' : '') + (stockCount(c.id) === 0 ? ' out-of-stock' : '');
+    div.title = c.name;
+    const inner = document.createElement('div');
+    inner.className = 'swatch-color';
+    inner.style.background = c.swatch;
+    div.appendChild(inner);
+    div.addEventListener('click', () => selectColor(c.id));
+    wrap.appendChild(div);
+  });
+}
+
+
+function renderSizes() {
+  const wrap = document.getElementById('size-btns');
+  wrap.innerHTML = '';
+  const c = getColor(focusedColorId);
+  SIZES.forEach(s => {
+    const btn = document.createElement('div');
+    const inStock = c.stock[s];
+    const isSelected = displayMode === 'select' && s === selectedJacketSize;
+    btn.className = 'size-btn' + (!inStock ? ' oos' : '') + (isSelected ? ' selected' : '');
+    btn.textContent = s;
+    if (inStock) {
+      btn.addEventListener('click', () => {
+        if (displayMode === 'select') {
+          selectedJacketSize = selectedJacketSize === s ? null : s;
+          renderSizes();
+        } else {
+          showSizeTooltip();
+        }
+      });
+    } else {
+      btn.style.pointerEvents = 'none';
+    }
+    wrap.appendChild(btn);
+  });
+}
+
+function showSizeTooltip() {
+  document.getElementById('size-tooltip').classList.add('visible');
+}
+
+
+function renderColorLabel() {
+  const c = getColor(focusedColorId);
+  document.getElementById('color-label').textContent = c.name;
+}
+
+function render() {
+  renderSwatches();
+  renderSizes();
+  renderColorLabel();
+}
+
+// ── Interactions ───────────────────────────────────────────────────────────
+function selectColor(id) {
+  if (id === focusedColorId) return;
+  focusedColorId = id;
+  selectedJacketSize = null;
+  render();
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+document.querySelectorAll('.phone').forEach(p => p.classList.add('mode-select'));
+render();
+
+document.getElementById('size-tooltip-close').addEventListener('click', () => {
+  document.getElementById('size-tooltip').classList.remove('visible');
+});
+
+['jacket-info-btn', 'shoe-info-btn'].forEach(id => {
+  const btn = document.getElementById(id);
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = btn.classList.contains('open');
+    document.querySelectorAll('.info-icon-btn').forEach(b => b.classList.remove('open'));
+    if (!isOpen) btn.classList.add('open');
+  });
+});
+document.addEventListener('click', () => {
+  document.querySelectorAll('.info-icon-btn').forEach(b => b.classList.remove('open'));
+});
+
+document.getElementById('jacket-accordion-header').addEventListener('click', () => {
+  jacketAccordionOpen = !jacketAccordionOpen;
+  document.getElementById('jacket-attrs-wrapper').classList.toggle('open', jacketAccordionOpen);
+});
+
+// ── Mode ───────────────────────────────────────────────────────────────────
+let jacketAccordionOpen = false;
+let shoeAccordionOpen = false;
+
+function setMode(mode) {
+  displayMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+  document.querySelectorAll('.phone').forEach(p => {
+    p.classList.remove('mode-select', 'mode-accordion');
+    if (mode === 'select') p.classList.add('mode-select');
+    if (mode === 'accordion') p.classList.add('mode-accordion');
+  });
+  // reset accordion state on mode switch
+  jacketAccordionOpen = false;
+  shoeAccordionOpen = false;
+  document.getElementById('jacket-attrs-wrapper').classList.remove('open');
+  document.getElementById('shoe-attrs-wrapper').classList.remove('open');
+  // reset selections
+  selectedJacketSize = null;
+  selectedShoeSize = null;
+  selectedShoeWidth = null;
+  render();
+  renderShoe();
+}
+
+// ── Tab switching ──────────────────────────────────────────────────────────
+function switchTab(which) {
+  document.querySelectorAll('.product-view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.product-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + which).classList.add('active');
+  document.querySelectorAll('.product-tab').forEach(t => {
+    if (t.textContent.toLowerCase().includes(which === 'jacket' ? 'jacket' : 'shoe')) {
+      t.classList.add('active');
+    }
+  });
+}
+
+// ── Shoe data ──────────────────────────────────────────────────────────────
+const SHOE_SIZES = ['7','7.5','8','8.5','9','9.5','10','10.5','11','11.5','12','12.5','13','14','15'];
+const WIDTHS = ['Medium (D)', 'Wide (2E)', 'Extra Wide (4E)'];
+
+// matrix[size][width] = in stock for that exact combination
+// Only defined for colors with multiple widths; single-width colors don't need cross-filtering
+const SHOE_COLORS = [
+  {
+    id: 'black-grey-white',
+    name: 'Black/Grey/White',
+    swatch: '#3a3a3a',
+    sizes:  { '7':true,'7.5':true,'8':true,'8.5':true,'9':true,'9.5':true,'10':true,'10.5':true,'11':true,'11.5':true,'12':true,'12.5':true,'13':true,'14':true,'15':true },
+    widths: { 'Medium (D)':true, 'Wide (2E)':true, 'Extra Wide (4E)':true },
+    matrix: {
+      '7':   {'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':false},
+      '7.5': {'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':false},
+      '8':   {'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':false},
+      '8.5': {'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':true },
+      '9':   {'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':true },
+      '9.5': {'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':true },
+      '10':  {'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':true },
+      '10.5':{'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':true },
+      '11':  {'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':true },
+      '11.5':{'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':true },
+      '12':  {'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':true },
+      '12.5':{'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':false},
+      '13':  {'Medium (D)':true,  'Wide (2E)':false, 'Extra Wide (4E)':false},
+      '14':  {'Medium (D)':true,  'Wide (2E)':false, 'Extra Wide (4E)':false},
+      '15':  {'Medium (D)':true,  'Wide (2E)':false, 'Extra Wide (4E)':false},
+    }
+  },
+  {
+    id: 'black-black',
+    name: 'Black/Black',
+    swatch: '#111111',
+    sizes:  { '7':true,'7.5':true,'8':true,'8.5':true,'9':true,'9.5':true,'10':true,'10.5':true,'11':true,'11.5':true,'12':true,'12.5':false,'13':false,'14':false,'15':false },
+    widths: { 'Medium (D)':true, 'Wide (2E)':true, 'Extra Wide (4E)':false },
+    matrix: {
+      '7':   {'Medium (D)':true,  'Wide (2E)':true },
+      '7.5': {'Medium (D)':true,  'Wide (2E)':true },
+      '8':   {'Medium (D)':true,  'Wide (2E)':true },
+      '8.5': {'Medium (D)':true,  'Wide (2E)':true },
+      '9':   {'Medium (D)':true,  'Wide (2E)':true },
+      '9.5': {'Medium (D)':true,  'Wide (2E)':true },
+      '10':  {'Medium (D)':true,  'Wide (2E)':true },
+      '10.5':{'Medium (D)':true,  'Wide (2E)':true },
+      '11':  {'Medium (D)':true,  'Wide (2E)':false},
+      '11.5':{'Medium (D)':true,  'Wide (2E)':false},
+      '12':  {'Medium (D)':true,  'Wide (2E)':false},
+    }
+  },
+  {
+    id: 'white-oyster',
+    name: 'White/Oyster',
+    swatch: '#e8e4dc',
+    sizes:  { '7':true,'7.5':true,'8':true,'8.5':true,'9':true,'9.5':true,'10':true,'10.5':true,'11':true,'11.5':false,'12':false,'12.5':false,'13':false,'14':false,'15':false },
+    widths: { 'Medium (D)':true, 'Wide (2E)':true, 'Extra Wide (4E)':false },
+    matrix: {
+      '7':   {'Medium (D)':true,  'Wide (2E)':false},
+      '7.5': {'Medium (D)':true,  'Wide (2E)':true },
+      '8':   {'Medium (D)':true,  'Wide (2E)':true },
+      '8.5': {'Medium (D)':true,  'Wide (2E)':true },
+      '9':   {'Medium (D)':true,  'Wide (2E)':true },
+      '9.5': {'Medium (D)':true,  'Wide (2E)':true },
+      '10':  {'Medium (D)':true,  'Wide (2E)':true },
+      '10.5':{'Medium (D)':true,  'Wide (2E)':false},
+      '11':  {'Medium (D)':true,  'Wide (2E)':false},
+    }
+  },
+  {
+    id: 'grey-slashed',
+    name: 'Grey/White',
+    swatch: '#c0c0c0',
+    sizes:  { '7':false,'7.5':false,'8':false,'8.5':false,'9':false,'9.5':false,'10':false,'10.5':false,'11':false,'11.5':false,'12':false,'12.5':false,'13':false,'14':false,'15':false },
+    widths: { 'Medium (D)':false, 'Wide (2E)':false, 'Extra Wide (4E)':false },
+    matrix: {}
+  },
+  {
+    id: 'green-black',
+    name: 'Green/Black',
+    swatch: '#2e6b3e',
+    sizes:  { '7':false,'7.5':true,'8':true,'8.5':true,'9':true,'9.5':true,'10':true,'10.5':true,'11':true,'11.5':true,'12':true,'12.5':false,'13':false,'14':false,'15':false },
+    widths: { 'Medium (D)':true, 'Wide (2E)':false, 'Extra Wide (4E)':false },
+    matrix: {} // single-width, no cross-filter needed
+  },
+  {
+    id: 'lime-gold',
+    name: 'Lime/Gold',
+    swatch: '#8db52a',
+    sizes:  { '7':true,'7.5':true,'8':true,'8.5':true,'9':true,'9.5':true,'10':true,'10.5':true,'11':true,'11.5':true,'12':true,'12.5':false,'13':false,'14':false,'15':false },
+    widths: { 'Medium (D)':true, 'Wide (2E)':true, 'Extra Wide (4E)':false },
+    matrix: {
+      '7':   {'Medium (D)':true,  'Wide (2E)':false},
+      '7.5': {'Medium (D)':true,  'Wide (2E)':true },
+      '8':   {'Medium (D)':true,  'Wide (2E)':true },
+      '8.5': {'Medium (D)':true,  'Wide (2E)':true },
+      '9':   {'Medium (D)':true,  'Wide (2E)':true },
+      '9.5': {'Medium (D)':true,  'Wide (2E)':true },
+      '10':  {'Medium (D)':true,  'Wide (2E)':true },
+      '10.5':{'Medium (D)':true,  'Wide (2E)':true },
+      '11':  {'Medium (D)':true,  'Wide (2E)':false},
+      '11.5':{'Medium (D)':true,  'Wide (2E)':false},
+      '12':  {'Medium (D)':true,  'Wide (2E)':false},
+    }
+  },
+  {
+    id: 'dark-grey',
+    name: 'Ebony/Grey',
+    swatch: '#4a4a4a',
+    sizes:  { '7':true,'7.5':true,'8':true,'8.5':true,'9':true,'9.5':true,'10':true,'10.5':true,'11':true,'11.5':true,'12':true,'12.5':true,'13':true,'14':false,'15':false },
+    widths: { 'Medium (D)':true, 'Wide (2E)':true, 'Extra Wide (4E)':true },
+    matrix: {
+      '7':   {'Medium (D)':true,  'Wide (2E)':false, 'Extra Wide (4E)':false},
+      '7.5': {'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':false},
+      '8':   {'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':false},
+      '8.5': {'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':true },
+      '9':   {'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':true },
+      '9.5': {'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':true },
+      '10':  {'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':true },
+      '10.5':{'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':true },
+      '11':  {'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':true },
+      '11.5':{'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':true },
+      '12':  {'Medium (D)':true,  'Wide (2E)':true,  'Extra Wide (4E)':false},
+      '12.5':{'Medium (D)':true,  'Wide (2E)':false, 'Extra Wide (4E)':false},
+      '13':  {'Medium (D)':true,  'Wide (2E)':false, 'Extra Wide (4E)':false},
+    }
+  },
+  {
+    id: 'blue-grey',
+    name: 'Blue/Grey',
+    swatch: '#5a7fa8',
+    sizes:  { '7':false,'7.5':true,'8':true,'8.5':true,'9':true,'9.5':true,'10':true,'10.5':true,'11':true,'11.5':false,'12':false,'12.5':false,'13':false,'14':false,'15':false },
+    widths: { 'Medium (D)':true, 'Wide (2E)':false, 'Extra Wide (4E)':false },
+    matrix: {}
+  },
+  {
+    id: 'navy-slashed',
+    name: 'Navy/White',
+    swatch: '#1a2860',
+    sizes:  { '7':false,'7.5':false,'8':false,'8.5':false,'9':false,'9.5':false,'10':false,'10.5':false,'11':false,'11.5':false,'12':false,'12.5':false,'13':false,'14':false,'15':false },
+    widths: { 'Medium (D)':false, 'Wide (2E)':false, 'Extra Wide (4E)':false },
+    matrix: {}
+  },
+  {
+    id: 'tan-bronze',
+    name: 'Tan/Bronze',
+    swatch: '#b8956a',
+    sizes:  { '7':true,'7.5':true,'8':true,'8.5':true,'9':true,'9.5':true,'10':true,'10.5':false,'11':false,'11.5':false,'12':false,'12.5':false,'13':false,'14':false,'15':false },
+    widths: { 'Medium (D)':true, 'Wide (2E)':false, 'Extra Wide (4E)':false },
+    matrix: {}
+  },
+  {
+    id: 'black-white-stripe',
+    name: 'Black/White',
+    swatch: '#2a2a2a',
+    sizes:  { '7':true,'7.5':true,'8':true,'8.5':true,'9':true,'9.5':true,'10':true,'10.5':true,'11':true,'11.5':true,'12':false,'12.5':false,'13':false,'14':false,'15':false },
+    widths: { 'Medium (D)':true, 'Wide (2E)':true, 'Extra Wide (4E)':false },
+    matrix: {
+      '7':   {'Medium (D)':true,  'Wide (2E)':false},
+      '7.5': {'Medium (D)':true,  'Wide (2E)':true },
+      '8':   {'Medium (D)':true,  'Wide (2E)':true },
+      '8.5': {'Medium (D)':true,  'Wide (2E)':true },
+      '9':   {'Medium (D)':true,  'Wide (2E)':true },
+      '9.5': {'Medium (D)':true,  'Wide (2E)':true },
+      '10':  {'Medium (D)':true,  'Wide (2E)':true },
+      '10.5':{'Medium (D)':true,  'Wide (2E)':true },
+      '11':  {'Medium (D)':true,  'Wide (2E)':false},
+      '11.5':{'Medium (D)':true,  'Wide (2E)':false},
+    }
+  }
+];
+
+let shoeColorId = 'black-grey-white';
+let selectedShoeSize = null;
+let selectedShoeWidth = null;
+
+function getShoeColor(id) {
+  return SHOE_COLORS.find(c => c.id === id);
+}
+
+function shoeStockCount(colorId) {
+  const c = getShoeColor(colorId);
+  return SHOE_SIZES.filter(s => c.sizes[s]).length;
+}
+
+function renderShoeSwatches() {
+  const wrap = document.getElementById('shoe-color-swatches');
+  wrap.innerHTML = '';
+  SHOE_COLORS.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'swatch' + (c.id === shoeColorId ? ' focused' : '') + (shoeStockCount(c.id) === 0 ? ' out-of-stock' : '');
+    div.title = c.name;
+    const inner = document.createElement('div');
+    inner.className = 'swatch-color';
+    inner.style.background = c.swatch;
+    div.appendChild(inner);
+    div.addEventListener('click', () => selectShoeColor(c.id));
+    wrap.appendChild(div);
+  });
+}
+
+function shoeSizeInStock(c, s) {
+  if (!c.sizes[s]) return false;
+  // In accordion mode, cross-filter by selected width
+  if (displayMode === 'accordion' && selectedShoeWidth && c.matrix[s]) {
+    return c.matrix[s][selectedShoeWidth] ?? false;
+  }
+  return true;
+}
+
+function shoeWidthAvail(c, w) {
+  if (!c.widths[w]) return false;
+  // In accordion mode, cross-filter by selected size
+  if (displayMode === 'accordion' && selectedShoeSize && c.matrix[selectedShoeSize]) {
+    return c.matrix[selectedShoeSize][w] ?? false;
+  }
+  return true;
+}
+
+function renderShoeSizes() {
+  const wrap = document.getElementById('shoe-size-btns');
+  wrap.innerHTML = '';
+  const c = getShoeColor(shoeColorId);
+  SHOE_SIZES.forEach(s => {
+    const btn = document.createElement('div');
+    const inStock = shoeSizeInStock(c, s);
+    const isSelected = (displayMode === 'select' || displayMode === 'accordion') && s === selectedShoeSize;
+    btn.className = 'size-btn' + (!inStock ? ' oos' : '') + (isSelected ? ' selected' : '');
+    btn.textContent = s;
+    if (inStock) {
+      btn.addEventListener('click', () => {
+        if (displayMode === 'select') {
+          selectedShoeSize = selectedShoeSize === s ? null : s;
+          renderShoeSizes();
+        } else if (displayMode === 'accordion') {
+          selectedShoeSize = selectedShoeSize === s ? null : s;
+          renderShoeSizes();
+          renderShoeWidths(); // widths update based on new size selection
+        } else {
+          showShoeSizeTooltip();
+        }
+      });
+    } else {
+      btn.style.pointerEvents = 'none';
+    }
+    wrap.appendChild(btn);
+  });
+}
+
+function renderShoeWidths() {
+  const wrap = document.getElementById('shoe-width-btns');
+  wrap.innerHTML = '';
+  const c = getShoeColor(shoeColorId);
+  WIDTHS.forEach(w => {
+    const btn = document.createElement('div');
+    const avail = shoeWidthAvail(c, w);
+    const isSelected = (displayMode === 'select' || displayMode === 'accordion') && w === selectedShoeWidth;
+    btn.className = 'size-btn' + (!avail ? ' oos' : '') + (isSelected ? ' selected' : '');
+    btn.textContent = w;
+    if (avail) {
+      btn.addEventListener('click', () => {
+        if (displayMode === 'select') {
+          selectedShoeWidth = selectedShoeWidth === w ? null : w;
+          renderShoeWidths();
+        } else if (displayMode === 'accordion') {
+          selectedShoeWidth = selectedShoeWidth === w ? null : w;
+          renderShoeWidths();
+          renderShoeSizes(); // sizes update based on new width selection
+        } else {
+          showShoeSizeTooltip();
+        }
+      });
+    } else {
+      btn.style.pointerEvents = 'none';
+    }
+    wrap.appendChild(btn);
+  });
+}
+
+function renderShoeColorLabel() {
+  document.getElementById('shoe-color-label').textContent = getShoeColor(shoeColorId).name;
+}
+
+function renderShoe() {
+  renderShoeSwatches();
+  renderShoeSizes();
+  renderShoeWidths();
+  renderShoeColorLabel();
+}
+
+function selectShoeColor(id) {
+  if (id === shoeColorId) return;
+  shoeColorId = id;
+  selectedShoeSize = null;
+  selectedShoeWidth = null;
+  renderShoe();
+}
+
+function showShoeSizeTooltip() {
+  document.getElementById('shoe-size-tooltip').classList.add('visible');
+}
+
+document.getElementById('shoe-size-tooltip-close').addEventListener('click', () => {
+  document.getElementById('shoe-size-tooltip').classList.remove('visible');
+});
+
+document.getElementById('shoe-accordion-header').addEventListener('click', () => {
+  shoeAccordionOpen = !shoeAccordionOpen;
+  document.getElementById('shoe-attrs-wrapper').classList.toggle('open', shoeAccordionOpen);
+});
+
+renderShoe();
+
+// ── URL params ─────────────────────────────────────────────────────────────
+// Supported: ?product=jacket|shoe  &mode=select|accordion|info
+// When a param is present its nav control is hidden (for clean sharing/embedding)
+(function applyUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  const product = params.get('product');
+  const mode    = params.get('mode');
+
+  if (product && ['jacket', 'shoe'].includes(product)) {
+    switchTab(product);
+    document.getElementById('product-tabs').style.display = 'none';
+  }
+
+  if (mode && ['select', 'accordion', 'info'].includes(mode)) {
+    setMode(mode);
+    document.getElementById('mode-toggle-wrap').style.display = 'none';
+  }
+})();
+</script>
+</body>
+</html>
