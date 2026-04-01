@@ -158,7 +158,7 @@ body {
   margin-bottom: 12px;
 }
 .select-header-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: #252525;
   margin-bottom: 3px;
@@ -501,6 +501,9 @@ body {
   font-size: 15px; color: #252525; margin-bottom: 8px;
 }
 .option-label strong { font-weight: 700; }
+.option-label .label-available { display: none; }
+.mode-select .option-label .label-default { display: none; }
+.mode-select .option-label .label-available { display: inline; }
 
 .color-swatches {
   display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;
@@ -784,7 +787,7 @@ body {
 
         <div class="select-header">
           <div class="select-header-title">
-            Check options &amp; availability
+            Preview options &amp; availability
             <button class="info-icon-btn" id="jacket-info-btn" aria-label="Availability info">
               <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
                 <circle cx="7.5" cy="7.5" r="6.5" stroke="currentColor" stroke-width="1.3"/>
@@ -807,14 +810,14 @@ body {
         </div>
 
         <!-- Color -->
-        <div class="option-label">Color: <strong id="color-label">Atlantic</strong></div>
+        <div class="option-label"><span class="label-default">Color: </span><span class="label-available">Available colors: </span><strong id="color-label">Atlantic</strong></div>
         <div class="color-swatches" id="color-swatches">
           <!-- injected by JS -->
         </div>
 
         <div class="attrs-wrapper" id="jacket-attrs-wrapper">
           <button class="accordion-header" id="jacket-accordion-header">
-            Check options &amp; availability
+            Preview options &amp; availability
             <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M4 6l4 4 4-4" stroke="#252525" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -822,7 +825,7 @@ body {
           <div class="attrs-body">
             <!-- Size -->
             <div class="size-label-row">
-              <div class="option-label" style="margin-bottom:0;">Size <a class="size-guide-link" href="#">Size guide</a></div>
+              <div class="option-label" style="margin-bottom:0;"><span class="label-default">Size </span><span class="label-available">Available sizes </span><a class="size-guide-link" href="#">Size guide</a></div>
             </div>
             <div class="size-btns" id="size-btns">
               <!-- injected by JS -->
@@ -973,7 +976,7 @@ body {
 
         <div class="select-header">
           <div class="select-header-title">
-            Check options &amp; availability
+            Preview options &amp; availability
             <button class="info-icon-btn" id="shoe-info-btn" aria-label="Availability info">
               <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
                 <circle cx="7.5" cy="7.5" r="6.5" stroke="currentColor" stroke-width="1.3"/>
@@ -996,12 +999,12 @@ body {
         </div>
 
         <!-- Color -->
-        <div class="option-label">Color: <strong id="shoe-color-label">Black/Grey/White</strong></div>
+        <div class="option-label"><span class="label-default">Color: </span><span class="label-available">Available colors: </span><strong id="shoe-color-label">Black/Grey/White</strong></div>
         <div class="color-swatches" id="shoe-color-swatches"></div>
 
         <div class="attrs-wrapper" id="shoe-attrs-wrapper">
           <button class="accordion-header" id="shoe-accordion-header">
-            Check options &amp; availability
+            Preview options &amp; availability
             <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M4 6l4 4 4-4" stroke="#252525" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -1009,12 +1012,12 @@ body {
           <div class="attrs-body">
             <!-- Size -->
             <div class="size-label-row">
-              <div class="option-label" style="margin-bottom:0;">Size <a class="size-guide-link" href="#">Size guide</a></div>
+              <div class="option-label" style="margin-bottom:0;"><span class="label-default">Size </span><span class="label-available">Available sizes </span><a class="size-guide-link" href="#">Size guide</a></div>
             </div>
             <div class="size-btns" id="shoe-size-btns"></div>
 
             <!-- Width -->
-            <div class="option-label" style="margin-top:14px;">Width</div>
+            <div class="option-label" style="margin-top:14px;"><span class="label-default">Width</span><span class="label-available">Available widths</span></div>
             <div class="size-btns" id="shoe-width-btns"></div>
 
             <div class="size-tooltip-wrap">
