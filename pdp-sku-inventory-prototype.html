@@ -588,6 +588,42 @@ body {
   padding: 0; margin-top: -1px;
 }
 .size-tooltip-close:hover { color: white; }
+
+.sg-tooltip-wrap { position: relative; }
+.sg-tooltip {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0; right: 0;
+  background: #3a3a3a;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: white;
+  line-height: 1.4;
+  z-index: 20;
+  align-items: flex-start;
+  gap: 10px;
+}
+.sg-tooltip.visible { display: flex; }
+.sg-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -6px; right: 155px;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #3a3a3a;
+}
+.sg-tooltip-text { flex: 1; }
+.sg-tooltip-close {
+  flex-shrink: 0;
+  background: none; border: none; cursor: pointer;
+  color: rgba(255,255,255,0.6);
+  font-size: 16px; line-height: 1;
+  padding: 0; margin-top: -1px;
+}
+.sg-tooltip-close:hover { color: white; }
+
 .size-tooltip::before {
   content: '';
   position: absolute;
@@ -824,8 +860,9 @@ body {
           </button>
           <div class="attrs-body">
             <!-- Size -->
-            <div class="size-label-row">
-              <div class="option-label" style="margin-bottom:0;"><span class="label-default">Size </span><span class="label-available">Available sizes </span><a class="size-guide-link" href="#">Size guide</a></div>
+            <div class="size-label-row sg-tooltip-wrap">
+              <div class="option-label" style="margin-bottom:0;"><span class="label-default">Size </span><span class="label-available">Available sizes </span><a class="size-guide-link" href="#" id="jacket-sg-link">Size guide</a></div>
+              <div class="sg-tooltip" id="jacket-sg-tooltip"><span class="sg-tooltip-text">The size guide isn't currently available.</span><button class="sg-tooltip-close" id="jacket-sg-close" aria-label="Dismiss">&#x2715;</button></div>
             </div>
             <div class="size-btns" id="size-btns">
               <!-- injected by JS -->
@@ -1011,8 +1048,9 @@ body {
           </button>
           <div class="attrs-body">
             <!-- Size -->
-            <div class="size-label-row">
-              <div class="option-label" style="margin-bottom:0;"><span class="label-default">Size </span><span class="label-available">Available sizes </span><a class="size-guide-link" href="#">Size guide</a></div>
+            <div class="size-label-row sg-tooltip-wrap">
+              <div class="option-label" style="margin-bottom:0;"><span class="label-default">Size </span><span class="label-available">Available sizes </span><a class="size-guide-link" href="#" id="shoe-sg-link">Size guide</a></div>
+              <div class="sg-tooltip" id="shoe-sg-tooltip"><span class="sg-tooltip-text">The size guide isn't currently available.</span><button class="sg-tooltip-close" id="shoe-sg-close" aria-label="Dismiss">&#x2715;</button></div>
             </div>
             <div class="size-btns" id="shoe-size-btns"></div>
 
@@ -1622,6 +1660,25 @@ document.getElementById('shoe-accordion-header').addEventListener('click', () =>
 });
 
 renderShoe();
+
+// ── Size guide tooltips ────────────────────────────────────────────────────
+['jacket', 'shoe'].forEach(product => {
+  const link    = document.getElementById(`${product}-sg-link`);
+  const tooltip = document.getElementById(`${product}-sg-tooltip`);
+  const close   = document.getElementById(`${product}-sg-close`);
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    tooltip.classList.toggle('visible');
+  });
+  close.addEventListener('click', e => {
+    e.stopPropagation();
+    tooltip.classList.remove('visible');
+  });
+});
+document.addEventListener('click', () => {
+  document.querySelectorAll('.sg-tooltip').forEach(t => t.classList.remove('visible'));
+});
 
 // ── URL params ─────────────────────────────────────────────────────────────
 // Supported: ?product=jacket|shoe  &mode=select|accordion|info
