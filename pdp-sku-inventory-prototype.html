@@ -1685,6 +1685,17 @@ document.addEventListener('click', () => {
   document.querySelectorAll('.sg-tooltip').forEach(t => t.classList.remove('visible'));
 });
 
+// ── Global scroll → phone screen ───────────────────────────────────────────
+window.addEventListener('wheel', (e) => {
+  const activeScroll = document.querySelector('.product-view.active .pdp-scroll');
+  if (!activeScroll) return;
+  // Only redirect if the scroll didn't originate inside the phone itself
+  if (!activeScroll.contains(e.target)) {
+    e.preventDefault();
+    activeScroll.scrollTop += e.deltaY;
+  }
+}, { passive: false });
+
 // ── URL params ─────────────────────────────────────────────────────────────
 // Supported: ?product=jacket|shoe  &mode=select|accordion|info
 // When a param is present its nav control is hidden (for clean sharing/embedding)
