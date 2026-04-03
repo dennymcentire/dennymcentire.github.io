@@ -350,6 +350,29 @@ body {
   white-space: nowrap;
 }
 
+/* select-mode toast */
+.select-toast {
+  position: fixed;
+  bottom: -120px; left: 50%; transform: translateX(-50%);
+  background: #000;
+  color: white;
+  padding: 16px 20px;
+  border-radius: 10px;
+  font-size: 14px; font-weight: 600; line-height: 1.4;
+  z-index: 200;
+  display: flex; align-items: center; gap: 16px;
+  white-space: nowrap;
+  transition: bottom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.select-toast.visible { bottom: 24px; }
+.select-toast-msg { flex: 1; }
+.select-toast-close {
+  background: none; border: none; color: white;
+  font-size: 20px; line-height: 1; cursor: pointer;
+  padding: 0; flex-shrink: 0; opacity: 0.7;
+}
+.select-toast-close:hover { opacity: 1; }
+
 .info-icon-btn {
   flex-shrink: 0; background: none; border: none; padding: 0;
   cursor: pointer; display: flex; align-items: center; color: #252525; position: relative;
@@ -722,7 +745,6 @@ body {
                     <div class="info-tooltip">Inventory is updated regularly, but things change fast. All options are subject to availability on the partner site.</div>
                   </button>
                 </div>
-                <div class="select-header-note">Purchased on outdoorresearch.com · your selections won't carry over.</div>
               </div>
 
               <div class="avail-note">
@@ -867,7 +889,6 @@ body {
                     <div class="info-tooltip">Inventory is updated regularly, but things change fast. All options are subject to availability on the partner site.</div>
                   </button>
                 </div>
-                <div class="select-header-note">Purchased on brooksrunning.com · your selections won't carry over.</div>
               </div>
 
               <div class="avail-note">
@@ -951,6 +972,15 @@ body {
 
 </div><!-- /.pdp-container -->
 
+<div class="select-toast" id="jacket-select-toast">
+  <span class="select-toast-msg">Your selections won't carry over · Purchased on outdoorresearch.com.</span>
+  <button class="select-toast-close" aria-label="Dismiss">&#x2715;</button>
+</div>
+<div class="select-toast" id="shoe-select-toast">
+  <span class="select-toast-msg">Your selections won't carry over · Purchased on brooksrunning.com.</span>
+  <button class="select-toast-close" aria-label="Dismiss">&#x2715;</button>
+</div>
+
 <script>
 // ── Inventory data ─────────────────────────────────────────────────────────
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
@@ -973,6 +1003,16 @@ const COLORS = [
 let displayMode = 'select';
 let focusedColorId = 'atlantic';
 let selectedJacketSize = null;
+let jacketToastDismissed = false;
+let shoeToastDismissed = false;
+
+function showSelectToast(id) {
+  if (displayMode !== 'select') return;
+  document.getElementById(id).classList.add('visible');
+}
+function hideSelectToast(id) {
+  document.getElementById(id).classList.remove('visible');
+}
 
 function getColor(id) { return COLORS.find(c => c.id === id); }
 function stockCount(colorId) {
@@ -1011,6 +1051,7 @@ function renderSizes() {
         if (displayMode === 'select' || displayMode === 'card') {
           selectedJacketSize = selectedJacketSize === s ? null : s;
           renderSizes();
+          if (displayMode === 'select' && selectedJacketSize && !jacketToastDismissed) showSelectToast('jacket-select-toast');
         } else {
           showSizeTooltip();
         }
@@ -1093,6 +1134,10 @@ function setMode(mode) {
   selectedJacketSize = null;
   selectedShoeSize = null;
   selectedShoeWidth = null;
+  jacketToastDismissed = false;
+  shoeToastDismissed = false;
+  hideSelectToast('jacket-select-toast');
+  hideSelectToast('shoe-select-toast');
   render();
   renderShoe();
 }
@@ -1310,6 +1355,7 @@ function renderShoeSizes() {
         if (displayMode === 'select') {
           selectedShoeSize = selectedShoeSize === s ? null : s;
           renderShoeSizes();
+          if (selectedShoeSize && !shoeToastDismissed) showSelectToast('shoe-select-toast');
         } else if (displayMode === 'accordion' || displayMode === 'card') {
           selectedShoeSize = selectedShoeSize === s ? null : s;
           renderShoeSizes();
@@ -1342,6 +1388,7 @@ function renderShoeWidths() {
         if (displayMode === 'select') {
           selectedShoeWidth = selectedShoeWidth === w ? null : w;
           renderShoeWidths();
+          if (selectedShoeWidth && !shoeToastDismissed) showSelectToast('shoe-select-toast');
         } else if (displayMode === 'accordion' || displayMode === 'card') {
           selectedShoeWidth = selectedShoeWidth === w ? null : w;
           renderShoeWidths();
@@ -1413,6 +1460,16 @@ document.addEventListener('click', () => {
   document.querySelectorAll('.sg-tooltip').forEach(t => t.classList.remove('visible'));
 });
 
+// ── Select-mode toast dismiss ──────────────────────────────────────────────
+document.getElementById('jacket-select-toast').querySelector('.select-toast-close').addEventListener('click', () => {
+  jacketToastDismissed = true;
+  hideSelectToast('jacket-select-toast');
+});
+document.getElementById('shoe-select-toast').querySelector('.select-toast-close').addEventListener('click', () => {
+  shoeToastDismissed = true;
+  hideSelectToast('shoe-select-toast');
+});
+
 // ── URL params ─────────────────────────────────────────────────────────────
 (function applyUrlParams() {
   const params = new URLSearchParams(window.location.search);
@@ -1420,10 +1477,11 @@ document.addEventListener('click', () => {
   const mode    = params.get('mode');
   if (product && ['jacket', 'shoe'].includes(product)) {
     switchTab(product);
-    document.getElementById('product-tabs').style.display = 'none';
   }
   if (mode && ['select', 'accordion', 'card', 'info'].includes(mode)) {
     setMode(mode);
+  }
+  if (product || mode) {
     document.getElementById('mode-toggle-wrap').style.display = 'none';
   }
 })();

@@ -177,6 +177,28 @@ body {
   font-size: 13px; font-weight: 600; color: #053c52;
 }
 
+/* select-mode toast */
+.select-toast {
+  position: absolute;
+  bottom: -120px; left: 12px; right: 12px;
+  background: #000;
+  color: white;
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-size: 13px; font-weight: 600; line-height: 1.4;
+  z-index: 50;
+  display: flex; align-items: flex-start; gap: 12px;
+  transition: bottom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.select-toast.visible { bottom: 16px; }
+.select-toast-msg { flex: 1; }
+.select-toast-close {
+  background: none; border: none; color: white;
+  font-size: 18px; line-height: 1; cursor: pointer;
+  padding: 0; flex-shrink: 0; opacity: 0.7;
+}
+.select-toast-close:hover { opacity: 1; }
+
 /* info icon + tooltip */
 .info-icon-btn {
   flex-shrink: 0;
@@ -932,7 +954,6 @@ body {
               <div class="info-tooltip">Inventory is updated regularly, but things change fast. All options are subject to availability on the partner site.</div>
             </button>
           </div>
-          <div class="select-header-note">Purchased on outdoorresearch.com · your selections won't carry over.</div>
         </div>
 
         <div class="avail-note">
@@ -1015,6 +1036,10 @@ body {
     </div>
   </div>
 
+  <div class="select-toast" id="jacket-select-toast">
+    <span class="select-toast-msg">Your selections won't carry over · Purchased on outdoorresearch.com.</span>
+    <button class="select-toast-close" aria-label="Dismiss">&#x2715;</button>
+  </div>
 </div><!-- /.phone -->
 </div><!-- /#view-jacket -->
 
@@ -1123,7 +1148,6 @@ body {
               <div class="info-tooltip">Inventory is updated regularly, but things change fast. All options are subject to availability on the partner site.</div>
             </button>
           </div>
-          <div class="select-header-note">Purchased on brooksrunning.com · your selections won't carry over.</div>
         </div>
 
         <div class="avail-note">
@@ -1204,6 +1228,10 @@ body {
     </div>
   </div>
 
+  <div class="select-toast" id="shoe-select-toast">
+    <span class="select-toast-msg">Your selections won't carry over · Purchased on brooksrunning.com.</span>
+    <button class="select-toast-close" aria-label="Dismiss">&#x2715;</button>
+  </div>
 </div><!-- /.phone -->
 </div><!-- /#view-shoe -->
 
@@ -1306,6 +1334,16 @@ const COLORS = [
 let displayMode = 'select'; // 'info' | 'select' | 'accordion'
 let focusedColorId = 'atlantic';
 let selectedJacketSize = null;
+let jacketToastDismissed = false;
+let shoeToastDismissed = false;
+
+function showSelectToast(id) {
+  if (displayMode !== 'select') return;
+  document.getElementById(id).classList.add('visible');
+}
+function hideSelectToast(id) {
+  document.getElementById(id).classList.remove('visible');
+}
 
 // ── Render helpers ─────────────────────────────────────────────────────────
 function getColor(id) {
@@ -1349,6 +1387,7 @@ function renderSizes() {
         if (displayMode === 'select' || displayMode === 'card') {
           selectedJacketSize = selectedJacketSize === s ? null : s;
           renderSizes();
+          if (displayMode === 'select' && selectedJacketSize && !jacketToastDismissed) showSelectToast('jacket-select-toast');
         } else {
           showSizeTooltip();
         }
@@ -1432,10 +1471,14 @@ function setMode(mode) {
   shoeAccordionOpen = false;
   document.getElementById('jacket-attrs-wrapper').classList.remove('open');
   document.getElementById('shoe-attrs-wrapper').classList.remove('open');
-  // reset selections
+  // reset selections and toasts
   selectedJacketSize = null;
   selectedShoeSize = null;
   selectedShoeWidth = null;
+  jacketToastDismissed = false;
+  shoeToastDismissed = false;
+  hideSelectToast('jacket-select-toast');
+  hideSelectToast('shoe-select-toast');
   render();
   renderShoe();
 }
@@ -1696,6 +1739,7 @@ function renderShoeSizes() {
         if (displayMode === 'select') {
           selectedShoeSize = selectedShoeSize === s ? null : s;
           renderShoeSizes();
+          if (selectedShoeSize && !shoeToastDismissed) showSelectToast('shoe-select-toast');
         } else if (displayMode === 'accordion' || displayMode === 'card') {
           selectedShoeSize = selectedShoeSize === s ? null : s;
           renderShoeSizes();
@@ -1728,6 +1772,7 @@ function renderShoeWidths() {
         if (displayMode === 'select') {
           selectedShoeWidth = selectedShoeWidth === w ? null : w;
           renderShoeWidths();
+          if (selectedShoeWidth && !shoeToastDismissed) showSelectToast('shoe-select-toast');
         } else if (displayMode === 'accordion' || displayMode === 'card') {
           selectedShoeWidth = selectedShoeWidth === w ? null : w;
           renderShoeWidths();
@@ -1780,6 +1825,16 @@ document.getElementById('shoe-accordion-header').addEventListener('click', () =>
 });
 
 renderShoe();
+
+// ── Select-mode toast dismiss ──────────────────────────────────────────────
+document.getElementById('jacket-select-toast').querySelector('.select-toast-close').addEventListener('click', () => {
+  jacketToastDismissed = true;
+  hideSelectToast('jacket-select-toast');
+});
+document.getElementById('shoe-select-toast').querySelector('.select-toast-close').addEventListener('click', () => {
+  shoeToastDismissed = true;
+  hideSelectToast('shoe-select-toast');
+});
 
 // ── Size guide tooltips ────────────────────────────────────────────────────
 ['jacket', 'shoe'].forEach(product => {
