@@ -337,7 +337,8 @@ body {
 .mode-select .size-tooltip { display: none !important; }
 
 .select-header { display: none; }
-.mode-select .select-header {
+.mode-select .select-header,
+.mode-info .select-header {
   display: block;
   background: #ddeaf8; border: 1px solid #4a7fd4;
   border-radius: 8px; padding: 10px 12px;
@@ -417,6 +418,7 @@ body {
 
 /* ── Card accordion mode ──────────────────────────────────────────────── */
 .mode-card .avail-note    { display: none; }
+.mode-info .avail-note    { display: none; }
 .mode-card .select-header { display: none; }
 .mode-card .size-tooltip  { display: none !important; }
 .mode-card .accordion-footer-note { display: none; }
@@ -425,6 +427,9 @@ body {
 .mode-card .attrs-wrapper {
   background: #f4f4f4; border-radius: 12px; overflow: hidden; margin-top: 16px; border: 1px solid #e3e3e3;
 }
+.attrs-wrapper-info { display: none; }
+.mode-info .attrs-wrapper-info { display: block; }
+.mode-info .purchase-box .attrs-wrapper { display: none; }
 .mode-card .accordion-header {
   display: flex; align-items: center; justify-content: space-between;
   width: 100%; padding: 14px 16px; background: transparent; border: none;
@@ -707,6 +712,21 @@ body {
               <div class="option-label"><span class="label-default">Color: </span><span class="label-available">Preview colors on Outdoor Research:</span><strong id="color-label">Atlantic</strong></div>
               <div class="color-swatches" id="color-swatches"></div>
 
+              <div class="attrs-wrapper attrs-wrapper-info">
+                <div class="attrs-body">
+                  <div class="size-label-row">
+                    <div class="option-label" style="margin-bottom:0;"><span class="label-default">Size</span><span class="label-available">Preview sizes on Outdoor Research</span></div>
+                  </div>
+                  <div class="size-btns" id="jacket-info-size-btns"></div>
+                  <div class="size-tooltip-wrap">
+                    <div class="size-tooltip" id="jacket-info-size-tooltip">
+                      <span class="size-tooltip-text">For informational purposes only. This product is purchased through Outdoor Research's site — your selections won't carry over.</span>
+                      <button class="size-tooltip-close" id="jacket-info-size-tooltip-close" aria-label="Dismiss">&#x2715;</button>
+                    </div>
+                  </div>
+                  <div class="accordion-footer-note">Purchased on outdoorresearch.com · your selections won't carry over.</div>
+                </div>
+              </div>
 
             </div><!-- /.avail-section -->
 
@@ -854,6 +874,23 @@ body {
               <div class="option-label"><span class="label-default">Color: </span><span class="label-available">Preview colors on Brooks Running:</span><strong id="shoe-color-label">Black/Grey/White</strong></div>
               <div class="color-swatches" id="shoe-color-swatches"></div>
 
+              <div class="attrs-wrapper attrs-wrapper-info">
+                <div class="attrs-body">
+                  <div class="size-label-row">
+                    <div class="option-label" style="margin-bottom:0;"><span class="label-default">Size</span><span class="label-available">Preview sizes on Brooks Running</span></div>
+                  </div>
+                  <div class="size-btns" id="shoe-info-size-btns"></div>
+                  <div class="option-label" style="margin-top:16px;"><span class="label-default">Width</span><span class="label-available">Preview widths on Brooks Running</span></div>
+                  <div class="size-btns" id="shoe-info-width-btns"></div>
+                  <div class="size-tooltip-wrap">
+                    <div class="size-tooltip" id="shoe-info-size-tooltip">
+                      <span class="size-tooltip-text">For informational purposes only. This product is purchased through Brooks Running's site — your selections won't carry over.</span>
+                      <button class="size-tooltip-close" id="shoe-info-size-tooltip-close" aria-label="Dismiss">&#x2715;</button>
+                    </div>
+                  </div>
+                  <div class="accordion-footer-note">Purchased on brooksrunning.com · your selections won't carry over.</div>
+                </div>
+              </div>
 
             </div><!-- /.avail-section -->
 
@@ -973,35 +1010,39 @@ function renderSwatches() {
 }
 
 function renderSizes() {
-  const wrap = document.getElementById('size-btns');
-  wrap.innerHTML = '';
-  const c = getColor(focusedColorId);
-  SIZES.forEach(s => {
-    const btn = document.createElement('div');
-    const inStock = c.stock[s];
-    const isSelected = (displayMode === 'select' || displayMode === 'card') && s === selectedJacketSize;
-    btn.className = 'size-btn' + (!inStock ? ' oos' : '') + (isSelected ? ' selected' : '');
-    btn.textContent = s;
-    if (inStock) {
-      btn.addEventListener('click', () => {
-        if (displayMode === 'select' || displayMode === 'card') {
-          selectedJacketSize = selectedJacketSize === s ? null : s;
-          renderSizes();
-        } else {
-          showSizeTooltip();
-        }
-      });
-    } else {
-      btn.style.pointerEvents = 'none';
-    }
-    wrap.appendChild(btn);
+  ['size-btns', 'jacket-info-size-btns'].forEach(containerId => {
+    const wrap = document.getElementById(containerId);
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    const c = getColor(focusedColorId);
+    SIZES.forEach(s => {
+      const btn = document.createElement('div');
+      const inStock = c.stock[s];
+      const isSelected = (displayMode === 'select' || displayMode === 'card') && s === selectedJacketSize;
+      btn.className = 'size-btn' + (!inStock ? ' oos' : '') + (isSelected ? ' selected' : '');
+      btn.textContent = s;
+      if (inStock) {
+        btn.addEventListener('click', () => {
+          if (displayMode === 'select' || displayMode === 'card') {
+            selectedJacketSize = selectedJacketSize === s ? null : s;
+            renderSizes();
+          } else {
+            showSizeTooltip();
+          }
+        });
+      } else {
+        btn.style.pointerEvents = 'none';
+      }
+      wrap.appendChild(btn);
+    });
   });
   const valEl = document.getElementById('jacket-size-val');
   if (valEl) valEl.textContent = selectedJacketSize ? ': ' + selectedJacketSize : '';
 }
 
 function showSizeTooltip() {
-  document.getElementById('size-tooltip').classList.add('visible');
+  const id = displayMode === 'info' ? 'jacket-info-size-tooltip' : 'size-tooltip';
+  document.getElementById(id).classList.add('visible');
 }
 
 function renderColorLabel() {
@@ -1030,6 +1071,9 @@ render();
 
 document.getElementById('size-tooltip-close').addEventListener('click', () => {
   document.getElementById('size-tooltip').classList.remove('visible');
+});
+document.getElementById('jacket-info-size-tooltip-close').addEventListener('click', () => {
+  document.getElementById('jacket-info-size-tooltip').classList.remove('visible');
 });
 
 ['jacket-info-btn', 'shoe-info-btn'].forEach(id => {
@@ -1060,10 +1104,11 @@ function setMode(mode) {
     b.classList.toggle('active', b.dataset.mode === mode);
   });
   document.querySelectorAll('.phone').forEach(p => {
-    p.classList.remove('mode-select', 'mode-accordion', 'mode-card');
+    p.classList.remove('mode-select', 'mode-accordion', 'mode-card', 'mode-info');
     if (mode === 'select')    p.classList.add('mode-select');
     if (mode === 'accordion') p.classList.add('mode-accordion');
     if (mode === 'card')      p.classList.add('mode-card');
+    if (mode === 'info')      p.classList.add('mode-info');
   });
   jacketAccordionOpen = false;
   shoeAccordionOpen = false;
@@ -1278,64 +1323,70 @@ function shoeWidthAvail(c, w) {
 }
 
 function renderShoeSizes() {
-  const wrap = document.getElementById('shoe-size-btns');
-  wrap.innerHTML = '';
-  const c = getShoeColor(shoeColorId);
-  SHOE_SIZES.forEach(s => {
-    const btn = document.createElement('div');
-    const inStock = shoeSizeInStock(c, s);
-    const isSelected = (displayMode === 'select' || displayMode === 'accordion' || displayMode === 'card') && s === selectedShoeSize;
-    btn.className = 'size-btn' + (!inStock ? ' oos' : '') + (isSelected ? ' selected' : '');
-    btn.textContent = s;
-    if (inStock) {
-      btn.addEventListener('click', () => {
-        if (displayMode === 'select') {
-          selectedShoeSize = selectedShoeSize === s ? null : s;
-          renderShoeSizes();
-        } else if (displayMode === 'accordion' || displayMode === 'card') {
-          selectedShoeSize = selectedShoeSize === s ? null : s;
-          renderShoeSizes();
-          renderShoeWidths();
-        } else {
-          showShoeSizeTooltip();
-        }
-      });
-    } else {
-      btn.style.pointerEvents = 'none';
-    }
-    wrap.appendChild(btn);
+  ['shoe-size-btns', 'shoe-info-size-btns'].forEach(containerId => {
+    const wrap = document.getElementById(containerId);
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    const c = getShoeColor(shoeColorId);
+    SHOE_SIZES.forEach(s => {
+      const btn = document.createElement('div');
+      const inStock = shoeSizeInStock(c, s);
+      const isSelected = (displayMode === 'select' || displayMode === 'accordion' || displayMode === 'card') && s === selectedShoeSize;
+      btn.className = 'size-btn' + (!inStock ? ' oos' : '') + (isSelected ? ' selected' : '');
+      btn.textContent = s;
+      if (inStock) {
+        btn.addEventListener('click', () => {
+          if (displayMode === 'select') {
+            selectedShoeSize = selectedShoeSize === s ? null : s;
+            renderShoeSizes();
+          } else if (displayMode === 'accordion' || displayMode === 'card') {
+            selectedShoeSize = selectedShoeSize === s ? null : s;
+            renderShoeSizes();
+            renderShoeWidths();
+          } else {
+            showShoeSizeTooltip();
+          }
+        });
+      } else {
+        btn.style.pointerEvents = 'none';
+      }
+      wrap.appendChild(btn);
+    });
   });
   const valEl = document.getElementById('shoe-size-val');
   if (valEl) valEl.textContent = selectedShoeSize ? ': ' + selectedShoeSize : '';
 }
 
 function renderShoeWidths() {
-  const wrap = document.getElementById('shoe-width-btns');
-  wrap.innerHTML = '';
-  const c = getShoeColor(shoeColorId);
-  WIDTHS.forEach(w => {
-    const btn = document.createElement('div');
-    const avail = shoeWidthAvail(c, w);
-    const isSelected = (displayMode === 'select' || displayMode === 'accordion' || displayMode === 'card') && w === selectedShoeWidth;
-    btn.className = 'size-btn' + (!avail ? ' oos' : '') + (isSelected ? ' selected' : '');
-    btn.textContent = w;
-    if (avail) {
-      btn.addEventListener('click', () => {
-        if (displayMode === 'select') {
-          selectedShoeWidth = selectedShoeWidth === w ? null : w;
-          renderShoeWidths();
-        } else if (displayMode === 'accordion' || displayMode === 'card') {
-          selectedShoeWidth = selectedShoeWidth === w ? null : w;
-          renderShoeWidths();
-          renderShoeSizes();
-        } else {
-          showShoeSizeTooltip();
-        }
-      });
-    } else {
-      btn.style.pointerEvents = 'none';
-    }
-    wrap.appendChild(btn);
+  ['shoe-width-btns', 'shoe-info-width-btns'].forEach(containerId => {
+    const wrap = document.getElementById(containerId);
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    const c = getShoeColor(shoeColorId);
+    WIDTHS.forEach(w => {
+      const btn = document.createElement('div');
+      const avail = shoeWidthAvail(c, w);
+      const isSelected = (displayMode === 'select' || displayMode === 'accordion' || displayMode === 'card') && w === selectedShoeWidth;
+      btn.className = 'size-btn' + (!avail ? ' oos' : '') + (isSelected ? ' selected' : '');
+      btn.textContent = w;
+      if (avail) {
+        btn.addEventListener('click', () => {
+          if (displayMode === 'select') {
+            selectedShoeWidth = selectedShoeWidth === w ? null : w;
+            renderShoeWidths();
+          } else if (displayMode === 'accordion' || displayMode === 'card') {
+            selectedShoeWidth = selectedShoeWidth === w ? null : w;
+            renderShoeWidths();
+            renderShoeSizes();
+          } else {
+            showShoeSizeTooltip();
+          }
+        });
+      } else {
+        btn.style.pointerEvents = 'none';
+      }
+      wrap.appendChild(btn);
+    });
   });
   const valEl = document.getElementById('shoe-width-val');
   if (valEl) valEl.textContent = selectedShoeWidth ? ': ' + selectedShoeWidth : '';
@@ -1366,11 +1417,15 @@ function selectShoeColor(id) {
 }
 
 function showShoeSizeTooltip() {
-  document.getElementById('shoe-size-tooltip').classList.add('visible');
+  const id = displayMode === 'info' ? 'shoe-info-size-tooltip' : 'shoe-size-tooltip';
+  document.getElementById(id).classList.add('visible');
 }
 
 document.getElementById('shoe-size-tooltip-close').addEventListener('click', () => {
   document.getElementById('shoe-size-tooltip').classList.remove('visible');
+});
+document.getElementById('shoe-info-size-tooltip-close').addEventListener('click', () => {
+  document.getElementById('shoe-info-size-tooltip').classList.remove('visible');
 });
 
 document.getElementById('shoe-accordion-header').addEventListener('click', () => {
