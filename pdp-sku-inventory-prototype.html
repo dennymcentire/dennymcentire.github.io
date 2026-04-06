@@ -314,7 +314,7 @@ body {
   background: #f4f4f4;
   border-radius: 12px;
   overflow: hidden;
-  margin-top: 12px;
+  margin-top: 16px;
 }
 .mode-card .accordion-header {
   display: flex;
@@ -337,31 +337,6 @@ body {
 .mode-card .attrs-wrapper.open .accordion-chevron { transform: rotate(180deg); }
 
 .card-sub-header { display: none; }
-.mode-card .attrs-wrapper.open .card-sub-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin: 0 16px 12px;
-  padding: 10px 12px;
-  background: #fff8ec;
-  border-radius: 8px;
-  border: 1px solid #e8a020;
-  border-left: 3px solid #e8a020;
-  font-size: 13px;
-  color: #7a5200;
-  line-height: 1.4;
-}
-.mode-card .attrs-wrapper.open .card-sub-header::before {
-  content: '';
-  flex-shrink: 0;
-  width: 16px;
-  height: 16px;
-  margin-top: 1px;
-  background-color: #e8a020;
-  border-radius: 50%;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' stroke='%23e8a020' stroke-width='1.3' fill='none'/%3E%3Cpath d='M8 7v4' stroke='white' stroke-width='1.3' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='5' r='.75' fill='white'/%3E%3C/svg%3E") center/contain no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' stroke='%23e8a020' stroke-width='1.3' fill='none'/%3E%3Cpath d='M8 7v4' stroke='white' stroke-width='1.3' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='5' r='.75' fill='white'/%3E%3C/svg%3E") center/contain no-repeat;
-}
 
 .mode-card .attrs-body {
   display: none;
@@ -602,6 +577,8 @@ body {
 .option-label .label-available { display: none; }
 .mode-select .option-label .label-default { display: none; }
 .mode-select .option-label .label-available { display: inline; }
+.mode-card .option-label .label-default { display: none; }
+.mode-card .option-label .label-available { display: inline; }
 
 .color-swatches {
   display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;
@@ -632,13 +609,6 @@ body {
 }
 
 /* Size */
-.size-guide-link {
-  font-size: 13px;
-  color: #0e5dbd;
-  text-decoration: none;
-  font-weight: 600;
-}
-.size-guide-link:hover { text-decoration: underline; }
 
 .size-label-row {
   display: flex;
@@ -687,40 +657,6 @@ body {
 }
 .size-tooltip-close:hover { color: white; }
 
-.sg-tooltip-wrap { position: relative; }
-.sg-tooltip {
-  display: none;
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0; right: 0;
-  background: #3a3a3a;
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 13px;
-  color: white;
-  line-height: 1.4;
-  z-index: 20;
-  align-items: flex-start;
-  gap: 10px;
-}
-.sg-tooltip.visible { display: flex; }
-.sg-tooltip::before {
-  content: '';
-  position: absolute;
-  top: -6px; right: 155px;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-bottom: 6px solid #3a3a3a;
-}
-.sg-tooltip-text { flex: 1; }
-.sg-tooltip-close {
-  flex-shrink: 0;
-  background: none; border: none; cursor: pointer;
-  color: rgba(255,255,255,0.6);
-  font-size: 16px; line-height: 1;
-  padding: 0; margin-top: -1px;
-}
-.sg-tooltip-close:hover { color: white; }
 
 .size-tooltip::before {
   content: '';
@@ -757,6 +693,16 @@ body {
 .purchase-meta {
   font-size: 13px; color: #757575; margin-bottom: 14px;
 }
+
+.card-partner-note { display: none; }
+.mode-card .card-partner-note {
+  display: block;
+  font-size: 13px; color: #757575; margin-top: 4px; margin-bottom: 14px;
+}
+
+.accordion-label-card { display: none; }
+.mode-card .accordion-label-default { display: none; }
+.mode-card .accordion-label-card { display: inline; }
 
 .purchase-features {
   display: flex;
@@ -852,7 +798,6 @@ body {
             <circle cx="7" cy="15" r="1.5" fill="#252525"/>
             <circle cx="13" cy="15" r="1.5" fill="#252525"/>
           </svg>
-          <div class="badge">3</div>
         </div>
       </div>
     </div>
@@ -945,37 +890,10 @@ body {
         </div>
 
         <!-- Color -->
-        <div class="option-label"><span class="label-default">Color: </span><span class="label-available">Preview colors:</span><strong id="color-label">Atlantic</strong></div>
+        <div class="card-partner-note">This product is purchased through a partner site.</div>
+        <div class="option-label"><span class="label-default">Color: </span><span class="label-available">Preview colors on Outdoor Research:</span><strong id="color-label">Atlantic</strong></div>
         <div class="color-swatches" id="color-swatches">
           <!-- injected by JS -->
-        </div>
-
-        <div class="attrs-wrapper" id="jacket-attrs-wrapper">
-          <button class="accordion-header" id="jacket-accordion-header">
-            Preview options &amp; availability
-            <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M4 6l4 4 4-4" stroke="#252525" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div class="card-sub-header">Purchased on outdoorresearch.com · your selections won't carry over.</div>
-          <div class="attrs-body">
-            <!-- Size -->
-            <div class="size-label-row sg-tooltip-wrap">
-              <div class="option-label" style="margin-bottom:0;"><span class="label-default">Size<span class="size-val-inline" id="jacket-size-val"></span></span><span class="label-available">Preview sizes</span><a class="size-guide-link" href="#" id="jacket-sg-link">Size guide</a></div>
-              <div class="sg-tooltip" id="jacket-sg-tooltip"><span class="sg-tooltip-text">The size guide isn't currently available.</span><button class="sg-tooltip-close" id="jacket-sg-close" aria-label="Dismiss">&#x2715;</button></div>
-            </div>
-            <div class="size-btns" id="size-btns">
-              <!-- injected by JS -->
-            </div>
-
-            <div class="size-tooltip-wrap">
-              <div class="size-tooltip" id="size-tooltip">
-                <span class="size-tooltip-text">Size selection happens on Outdoor Research's site. Use this page to check what's available before you visit.</span>
-                <button class="size-tooltip-close" id="size-tooltip-close" aria-label="Dismiss">&#x2715;</button>
-              </div>
-            </div>
-            <div class="accordion-footer-note">Purchased on outdoorresearch.com · your selections won't carry over.</div>
-          </div>
         </div>
 
       </div>
@@ -1010,6 +928,31 @@ body {
             <path d="M5 2h7v7M12 2L2 12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </a>
+
+        <div class="attrs-wrapper" id="jacket-attrs-wrapper">
+          <button class="accordion-header" id="jacket-accordion-header">
+            <span class="accordion-label-default">Preview options &amp; availability</span>
+            <span class="accordion-label-card">Preview options available on Outdoor Research</span>
+            <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M4 6l4 4 4-4" stroke="#252525" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="attrs-body">
+            <div class="option-label"><span class="label-default">Color: </span><span class="label-available">Preview colors on Outdoor Research:</span> <strong id="jacket-card-color-label"></strong></div>
+            <div class="color-swatches" id="jacket-card-color-swatches" style="margin-bottom:16px;"></div>
+            <div class="size-label-row">
+              <div class="option-label" style="margin-bottom:0;"><span class="label-default">Size<span class="size-val-inline" id="jacket-size-val"></span></span><span class="label-available">Preview sizes on Outdoor Research</span></div>
+            </div>
+            <div class="size-btns" id="size-btns"></div>
+            <div class="size-tooltip-wrap">
+              <div class="size-tooltip" id="size-tooltip">
+                <span class="size-tooltip-text">Size selection happens on Outdoor Research's site. Use this page to check what's available before you visit.</span>
+                <button class="size-tooltip-close" id="size-tooltip-close" aria-label="Dismiss">&#x2715;</button>
+              </div>
+            </div>
+            <div class="accordion-footer-note">Purchased on outdoorresearch.com · your selections won't carry over.</div>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -1050,7 +993,6 @@ body {
             <circle cx="7" cy="15" r="1.5" fill="#252525"/>
             <circle cx="13" cy="15" r="1.5" fill="#252525"/>
           </svg>
-          <div class="badge">3</div>
         </div>
       </div>
     </div>
@@ -1136,38 +1078,9 @@ body {
         </div>
 
         <!-- Color -->
-        <div class="option-label"><span class="label-default">Color: </span><span class="label-available">Preview colors:</span><strong id="shoe-color-label">Black/Grey/White</strong></div>
+        <div class="card-partner-note">This product is purchased through a partner site.</div>
+        <div class="option-label"><span class="label-default">Color: </span><span class="label-available">Preview colors on Brooks Running:</span><strong id="shoe-color-label">Black/Grey/White</strong></div>
         <div class="color-swatches" id="shoe-color-swatches"></div>
-
-        <div class="attrs-wrapper" id="shoe-attrs-wrapper">
-          <button class="accordion-header" id="shoe-accordion-header">
-            Preview options &amp; availability
-            <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M4 6l4 4 4-4" stroke="#252525" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div class="card-sub-header">Purchased on brooksrunning.com · your selections won't carry over.</div>
-          <div class="attrs-body">
-            <!-- Size -->
-            <div class="size-label-row sg-tooltip-wrap">
-              <div class="option-label" style="margin-bottom:0;"><span class="label-default">Size<span class="size-val-inline" id="shoe-size-val"></span></span><span class="label-available">Preview sizes</span><a class="size-guide-link" href="#" id="shoe-sg-link">Size guide</a></div>
-              <div class="sg-tooltip" id="shoe-sg-tooltip"><span class="sg-tooltip-text">The size guide isn't currently available.</span><button class="sg-tooltip-close" id="shoe-sg-close" aria-label="Dismiss">&#x2715;</button></div>
-            </div>
-            <div class="size-btns" id="shoe-size-btns"></div>
-
-            <!-- Width -->
-            <div class="option-label" style="margin-top:14px;"><span class="label-default">Width<span class="size-val-inline" id="shoe-width-val"></span></span><span class="label-available">Preview widths</span></div>
-            <div class="size-btns" id="shoe-width-btns"></div>
-
-            <div class="size-tooltip-wrap">
-              <div class="size-tooltip" id="shoe-size-tooltip">
-                <span class="size-tooltip-text">Size and width selection happens on Brooks Running's site. Use this page to check what's available before you visit.</span>
-                <button class="size-tooltip-close" id="shoe-size-tooltip-close" aria-label="Dismiss">&#x2715;</button>
-              </div>
-            </div>
-            <div class="accordion-footer-note">Purchased on brooksrunning.com · your selections won't carry over.</div>
-          </div>
-        </div>
 
       </div>
 
@@ -1199,6 +1112,33 @@ body {
             <path d="M5 2h7v7M12 2L2 12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </a>
+
+        <div class="attrs-wrapper" id="shoe-attrs-wrapper">
+          <button class="accordion-header" id="shoe-accordion-header">
+            <span class="accordion-label-default">Preview options &amp; availability</span>
+            <span class="accordion-label-card">Preview options available on Brooks Running</span>
+            <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M4 6l4 4 4-4" stroke="#252525" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="attrs-body">
+            <div class="option-label"><span class="label-default">Color: </span><span class="label-available">Preview colors on Brooks Running:</span> <strong id="shoe-card-color-label"></strong></div>
+            <div class="color-swatches" id="shoe-card-color-swatches" style="margin-bottom:16px;"></div>
+            <div class="size-label-row">
+              <div class="option-label" style="margin-bottom:0;"><span class="label-default">Size<span class="size-val-inline" id="shoe-size-val"></span></span><span class="label-available">Preview sizes on Brooks Running</span></div>
+            </div>
+            <div class="size-btns" id="shoe-size-btns"></div>
+            <div class="option-label" style="margin-top:14px;"><span class="label-default">Width<span class="size-val-inline" id="shoe-width-val"></span></span><span class="label-available">Preview widths on Brooks Running</span></div>
+            <div class="size-btns" id="shoe-width-btns"></div>
+            <div class="size-tooltip-wrap">
+              <div class="size-tooltip" id="shoe-size-tooltip">
+                <span class="size-tooltip-text">Size and width selection happens on Brooks Running's site. Use this page to check what's available before you visit.</span>
+                <button class="size-tooltip-close" id="shoe-size-tooltip-close" aria-label="Dismiss">&#x2715;</button>
+              </div>
+            </div>
+            <div class="accordion-footer-note">Purchased on brooksrunning.com · your selections won't carry over.</div>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -1318,18 +1258,21 @@ function stockCount(colorId) {
 }
 
 function renderSwatches() {
-  const wrap = document.getElementById('color-swatches');
-  wrap.innerHTML = '';
-  COLORS.forEach(c => {
-    const div = document.createElement('div');
-    div.className = 'swatch' + (c.id === focusedColorId ? ' focused' : '') + (stockCount(c.id) === 0 ? ' out-of-stock' : '');
-    div.title = c.name;
-    const inner = document.createElement('div');
-    inner.className = 'swatch-color';
-    inner.style.background = c.swatch;
-    div.appendChild(inner);
-    div.addEventListener('click', () => selectColor(c.id));
-    wrap.appendChild(div);
+  ['color-swatches', 'jacket-card-color-swatches'].forEach(containerId => {
+    const wrap = document.getElementById(containerId);
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    COLORS.forEach(c => {
+      const div = document.createElement('div');
+      div.className = 'swatch' + (c.id === focusedColorId ? ' focused' : '') + (stockCount(c.id) === 0 ? ' out-of-stock' : '');
+      div.title = c.name;
+      const inner = document.createElement('div');
+      inner.className = 'swatch-color';
+      inner.style.background = c.swatch;
+      div.appendChild(inner);
+      div.addEventListener('click', () => selectColor(c.id));
+      wrap.appendChild(div);
+    });
   });
 }
 
@@ -1368,8 +1311,10 @@ function showSizeTooltip() {
 
 
 function renderColorLabel() {
-  const c = getColor(focusedColorId);
-  document.getElementById('color-label').textContent = c.name;
+  const name = getColor(focusedColorId).name;
+  document.getElementById('color-label').textContent = name;
+  const cardLabel = document.getElementById('jacket-card-color-label');
+  if (cardLabel) cardLabel.textContent = name;
 }
 
 function render() {
@@ -1646,20 +1591,23 @@ function shoeStockCount(colorId) {
 }
 
 function renderShoeSwatches() {
-  const wrap = document.getElementById('shoe-color-swatches');
-  wrap.innerHTML = '';
-  SHOE_COLORS.forEach(c => {
-    const div = document.createElement('div');
-    div.className = 'swatch' + (c.id === shoeColorId ? ' focused' : '') + (shoeStockCount(c.id) === 0 ? ' out-of-stock' : '');
-    div.title = c.name;
-    const inner = document.createElement('div');
-    inner.className = 'swatch-color';
-    inner.style.backgroundImage = `url(${c.img})`;
-    inner.style.backgroundSize = '100%';
-    inner.style.backgroundPosition = '58% 42%';
-    div.appendChild(inner);
-    div.addEventListener('click', () => selectShoeColor(c.id));
-    wrap.appendChild(div);
+  ['shoe-color-swatches', 'shoe-card-color-swatches'].forEach(containerId => {
+    const wrap = document.getElementById(containerId);
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    SHOE_COLORS.forEach(c => {
+      const div = document.createElement('div');
+      div.className = 'swatch' + (c.id === shoeColorId ? ' focused' : '') + (shoeStockCount(c.id) === 0 ? ' out-of-stock' : '');
+      div.title = c.name;
+      const inner = document.createElement('div');
+      inner.className = 'swatch-color';
+      inner.style.backgroundImage = `url(${c.img})`;
+      inner.style.backgroundSize = '100%';
+      inner.style.backgroundPosition = '58% 42%';
+      div.appendChild(inner);
+      div.addEventListener('click', () => selectShoeColor(c.id));
+      wrap.appendChild(div);
+    });
   });
 }
 
@@ -1746,7 +1694,10 @@ function renderShoeWidths() {
 }
 
 function renderShoeColorLabel() {
-  document.getElementById('shoe-color-label').textContent = getShoeColor(shoeColorId).name;
+  const name = getShoeColor(shoeColorId).name;
+  document.getElementById('shoe-color-label').textContent = name;
+  const cardLabel = document.getElementById('shoe-card-color-label');
+  if (cardLabel) cardLabel.textContent = name;
 }
 
 function renderShoe() {
@@ -1780,25 +1731,6 @@ document.getElementById('shoe-accordion-header').addEventListener('click', () =>
 });
 
 renderShoe();
-
-// ── Size guide tooltips ────────────────────────────────────────────────────
-['jacket', 'shoe'].forEach(product => {
-  const link    = document.getElementById(`${product}-sg-link`);
-  const tooltip = document.getElementById(`${product}-sg-tooltip`);
-  const close   = document.getElementById(`${product}-sg-close`);
-  link.addEventListener('click', e => {
-    e.preventDefault();
-    e.stopPropagation();
-    tooltip.classList.toggle('visible');
-  });
-  close.addEventListener('click', e => {
-    e.stopPropagation();
-    tooltip.classList.remove('visible');
-  });
-});
-document.addEventListener('click', () => {
-  document.querySelectorAll('.sg-tooltip').forEach(t => t.classList.remove('visible'));
-});
 
 // ── Global scroll → phone screen ───────────────────────────────────────────
 window.addEventListener('wheel', (e) => {
