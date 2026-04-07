@@ -181,6 +181,20 @@ body {
 .product-view { display: none; }
 .product-view.active { display: block; }
 
+/* ── Back bar (from PLP) ──────────────────────────────────────────────── */
+.back-bar {
+  display: none;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0e5dbd;
+  text-decoration: none;
+}
+.back-bar.visible { display: flex; }
+.back-bar:hover { color: #1a3f8c; }
+
 /* ── Breadcrumb ───────────────────────────────────────────────────────── */
 .breadcrumb {
   font-size: 14px;
@@ -434,6 +448,10 @@ body {
 }
 .card-info-message.visible { display: block; animation: cardMsgIn 0.25s ease both; }
 .mode-card .accordion-footer-note { display: none; }
+.accordion-label-group { display: flex; flex-direction: column; gap: 2px; }
+.accordion-sub-label { display: none; font-size: 12px; font-weight: 400; color: #757575; }
+.accordion-sub-label strong { color: #252525; }
+.mode-card .accordion-sub-label { display: block; }
 .mode-card .avail-section { background: none; border: none; padding: 0; }
 
 .mode-card .attrs-wrapper {
@@ -441,7 +459,7 @@ body {
 }
 .attrs-wrapper-info { display: none; }
 .mode-info .attrs-wrapper-info { display: block; }
-.mode-info .purchase-box .attrs-wrapper { display: none; }
+.mode-info #jacket-attrs-wrapper, .mode-info #shoe-attrs-wrapper { display: none; }
 .mode-card .accordion-header {
   display: flex; align-items: center; justify-content: space-between;
   width: 100%; padding: 14px 16px; background: transparent; border: none;
@@ -644,6 +662,11 @@ body {
   <!-- ── Rain Jacket ──────────────────────────────────────────────────────── -->
   <div class="product-view active" id="view-jacket">
 
+    <a class="back-bar" id="jacket-back-bar" href="plp-running-shoes.html">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Running Shoes
+    </a>
+
     <div class="breadcrumb">
       <span>...</span><span class="sep">/</span><span>Rain Jackets</span>
     </div>
@@ -721,8 +744,29 @@ body {
               </div>
 
               <div class="card-partner-note">This product is purchased through a partner site.</div>
-              <div class="option-label"><span class="label-default">Color: </span><span class="label-available">Preview colors on Outdoor Research:</span><strong id="color-label">Atlantic</strong></div>
+              <div class="option-label"><span class="label-default">Colors: </span><span class="label-available">Preview colors on Outdoor Research:</span><strong id="color-label">Atlantic</strong></div>
               <div class="color-swatches" id="color-swatches"></div>
+
+              <div class="attrs-wrapper" id="jacket-attrs-wrapper">
+                <button class="accordion-header" id="jacket-accordion-header">
+                  <div class="accordion-label-group">
+                    <span class="accordion-label-default">Preview options &amp; availability</span>
+                    <span class="accordion-label-card">Preview available options</span>
+                    <span class="accordion-sub-label"><strong>OR</strong> — check options by visiting the brand site below.</span>
+                  </div>
+                  <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M4 6l4 4 4-4" stroke="#252525" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <div class="attrs-body">
+                  <div class="card-info-message" id="jacket-card-info-msg">For informational purposes only. Purchased on outdoorresearch.com.</div>
+                  <div class="size-label-row">
+                    <div class="option-label" style="margin-bottom:0;"><span class="label-default">Size<span class="size-val-inline" id="jacket-size-val"></span></span><span class="label-available">Preview sizes on Outdoor Research</span></div>
+                  </div>
+                  <div class="size-btns" id="size-btns"></div>
+                  <div class="accordion-footer-note">Purchased on outdoorresearch.com · your selections won't carry over.</div>
+                </div>
+              </div>
 
               <div class="attrs-wrapper attrs-wrapper-info">
                 <div class="attrs-body">
@@ -771,25 +815,6 @@ body {
                   <path d="M5 2h7v7M12 2L2 12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </a>
-              <div class="attrs-wrapper" id="jacket-attrs-wrapper">
-                <button class="accordion-header" id="jacket-accordion-header">
-                  <span class="accordion-label-default">Preview options &amp; availability</span>
-                  <span class="accordion-label-card">Preview available options</span>
-                  <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M4 6l4 4 4-4" stroke="#252525" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </button>
-                <div class="attrs-body">
-                  <div class="card-info-message" id="jacket-card-info-msg">For informational purposes only. Purchased on outdoorresearch.com.</div>
-                  <div class="option-label"><span class="label-default">Color: </span><span class="label-available">Preview colors on Outdoor Research:</span> <strong id="jacket-card-color-label"></strong></div>
-                  <div class="color-swatches" id="jacket-card-color-swatches" style="margin-bottom:16px;"></div>
-                  <div class="size-label-row">
-                    <div class="option-label" style="margin-bottom:0;"><span class="label-default">Size<span class="size-val-inline" id="jacket-size-val"></span></span><span class="label-available">Preview sizes on Outdoor Research</span></div>
-                  </div>
-                  <div class="size-btns" id="size-btns"></div>
-                  <div class="accordion-footer-note">Purchased on outdoorresearch.com · your selections won't carry over.</div>
-                </div>
-              </div>
             </div>
 
           </div>
@@ -801,6 +826,11 @@ body {
 
   <!-- ── Running Shoe ──────────────────────────────────────────────────────── -->
   <div class="product-view" id="view-shoe">
+
+    <a class="back-bar" id="shoe-back-bar" href="plp-running-shoes.html">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Running Shoes
+    </a>
 
     <div class="breadcrumb">
       <span>...</span><span class="sep">/</span><span>Running Shoes</span>
@@ -878,8 +908,33 @@ body {
               </div>
 
               <div class="card-partner-note">This product is purchased through a partner site.</div>
-              <div class="option-label"><span class="label-default">Color: </span><span class="label-available">Preview colors on Brooks Running:</span><strong id="shoe-color-label">Black/Grey/White</strong></div>
+              <div class="option-label"><span class="label-default">Colors: </span><span class="label-available">Preview colors on Brooks Running:</span><strong id="shoe-color-label">Black/Grey/White</strong></div>
               <div class="color-swatches" id="shoe-color-swatches"></div>
+
+              <div class="attrs-wrapper" id="shoe-attrs-wrapper">
+                <button class="accordion-header" id="shoe-accordion-header">
+                  <div class="accordion-label-group">
+                    <span class="accordion-label-default">Preview options &amp; availability</span>
+                    <span class="accordion-label-card">Preview available options</span>
+                    <span class="accordion-sub-label"><strong>OR</strong> — check options by visiting the brand site below.</span>
+                  </div>
+                  <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M4 6l4 4 4-4" stroke="#252525" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <div class="attrs-body">
+                  <div class="card-info-message" id="shoe-card-info-msg">For informational purposes only. Purchased on brooksrunning.com.</div>
+                  <div class="size-label-row">
+                    <div class="option-label" style="margin-bottom:0;"><span class="label-default">Size<span class="size-val-inline" id="shoe-size-val"></span></span><span class="label-available">Preview sizes on Brooks Running</span></div>
+                  </div>
+                  <div class="size-btns" id="shoe-size-btns"></div>
+
+                  <div class="option-label" style="margin-top:16px;"><span class="label-default">Width<span class="size-val-inline" id="shoe-width-val"></span></span><span class="label-available">Preview widths on Brooks Running</span></div>
+                  <div class="size-btns" id="shoe-width-btns"></div>
+
+                  <div class="accordion-footer-note">Purchased on brooksrunning.com · your selections won't carry over.</div>
+                </div>
+              </div>
 
               <div class="attrs-wrapper attrs-wrapper-info">
                 <div class="attrs-body">
@@ -929,29 +984,6 @@ body {
                   <path d="M5 2h7v7M12 2L2 12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </a>
-              <div class="attrs-wrapper" id="shoe-attrs-wrapper">
-                <button class="accordion-header" id="shoe-accordion-header">
-                  <span class="accordion-label-default">Preview options &amp; availability</span>
-                  <span class="accordion-label-card">Preview available options</span>
-                  <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M4 6l4 4 4-4" stroke="#252525" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </button>
-                <div class="attrs-body">
-                  <div class="card-info-message" id="shoe-card-info-msg">For informational purposes only. Purchased on brooksrunning.com.</div>
-                  <div class="option-label"><span class="label-default">Color: </span><span class="label-available">Preview colors on Brooks Running:</span> <strong id="shoe-card-color-label"></strong></div>
-                  <div class="color-swatches" id="shoe-card-color-swatches" style="margin-bottom:16px;"></div>
-                  <div class="size-label-row">
-                    <div class="option-label" style="margin-bottom:0;"><span class="label-default">Size<span class="size-val-inline" id="shoe-size-val"></span></span><span class="label-available">Preview sizes on Brooks Running</span></div>
-                  </div>
-                  <div class="size-btns" id="shoe-size-btns"></div>
-
-                  <div class="option-label" style="margin-top:16px;"><span class="label-default">Width<span class="size-val-inline" id="shoe-width-val"></span></span><span class="label-available">Preview widths on Brooks Running</span></div>
-                  <div class="size-btns" id="shoe-width-btns"></div>
-
-                  <div class="accordion-footer-note">Purchased on brooksrunning.com · your selections won't carry over.</div>
-                </div>
-              </div>
             </div>
 
           </div>
@@ -993,7 +1025,7 @@ function stockCount(colorId) {
 }
 
 function renderSwatches() {
-  ['color-swatches', 'jacket-card-color-swatches'].forEach(containerId => {
+  ['color-swatches'].forEach(containerId => {
     const wrap = document.getElementById(containerId);
     if (!wrap) return;
     wrap.innerHTML = '';
@@ -1057,8 +1089,6 @@ function showSizeTooltip() {
 function renderColorLabel() {
   const name = getColor(focusedColorId).name;
   document.getElementById('color-label').textContent = name;
-  const cardLabel = document.getElementById('jacket-card-color-label');
-  if (cardLabel) cardLabel.textContent = name;
 }
 
 function render() {
@@ -1297,7 +1327,7 @@ let selectedShoeWidth = null;
 function getShoeColor(id) { return SHOE_COLORS.find(c => c.id === id); }
 
 function renderShoeSwatches() {
-  ['shoe-color-swatches', 'shoe-card-color-swatches'].forEach(containerId => {
+  ['shoe-color-swatches'].forEach(containerId => {
     const wrap = document.getElementById(containerId);
     if (!wrap) return;
     wrap.innerHTML = '';
@@ -1415,8 +1445,6 @@ function renderShoeWidths() {
 function renderShoeColorLabel() {
   const name = getShoeColor(shoeColorId).name;
   document.getElementById('shoe-color-label').textContent = name;
-  const cardLabel = document.getElementById('shoe-card-color-label');
-  if (cardLabel) cardLabel.textContent = name;
 }
 
 function renderShoe() {
@@ -1468,6 +1496,11 @@ renderShoe();
   }
   if (product || mode) {
     document.getElementById('mode-toggle-wrap').style.display = 'none';
+  }
+  if (params.get('from') === 'plp') {
+    const tab = (product === 'jacket') ? 'jacket' : 'shoe';
+    const bar = document.getElementById(tab + '-back-bar');
+    if (bar) bar.classList.add('visible');
   }
 })();
 </script>

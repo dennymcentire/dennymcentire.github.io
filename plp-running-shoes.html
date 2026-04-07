@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Running Shoes – EV Sports</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,700;0,900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Source Sans Pro', system-ui, sans-serif;
+  background: #f5f5f5;
+  color: #252525;
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+.site-header {
+  background: #252525;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.ev-logo {
+  width: 32px; height: 32px;
+  background: #ee5720;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.ev-logo svg { display: block; }
+.site-name {
+  font-size: 18px; font-weight: 900; color: white;
+  letter-spacing: -0.3px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+.header-search {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 9px 14px;
+  color: rgba(255,255,255,0.6);
+  font-size: 14px;
+  max-width: 560px;
+}
+.header-search svg { flex-shrink: 0; }
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.header-actions a {
+  color: rgba(255,255,255,0.8);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.header-actions a:hover { color: white; }
+.header-icon-btn {
+  background: none; border: none; cursor: pointer;
+  color: rgba(255,255,255,0.8);
+  display: flex; align-items: center;
+  position: relative;
+}
+.header-icon-btn:hover { color: white; }
+.header-badge {
+  position: absolute;
+  top: -6px; right: -6px;
+  width: 16px; height: 16px;
+  background: #ee5720;
+  border-radius: 50%;
+  font-size: 10px; font-weight: 700;
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+}
+.header-nav {
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.header-nav-inner {
+  display: flex;
+  gap: 0;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.header-nav-inner::-webkit-scrollbar { display: none; }
+.nav-link {
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  text-decoration: none;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.nav-link:hover { color: white; }
+.nav-link.active { color: white; border-bottom-color: #ee5720; }
+
+/* ── Breadcrumb ── */
+.breadcrumb-bar {
+  background: white;
+  border-bottom: 1px solid #e8e8e8;
+}
+.breadcrumb-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #757575;
+}
+.breadcrumb-inner a {
+  color: #0e5dbd;
+  text-decoration: none;
+}
+.breadcrumb-inner a:hover { text-decoration: underline; }
+.breadcrumb-sep { color: #c5c5c5; }
+.breadcrumb-current { color: #252525; font-weight: 600; }
+
+/* ── Page content ── */
+.page-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 24px 48px;
+}
+
+/* ── Category header ── */
+.category-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.category-title-group { flex: 1; min-width: 200px; }
+.category-title {
+  font-size: 28px;
+  font-weight: 900;
+  color: #252525;
+  line-height: 1.1;
+}
+.category-count {
+  font-size: 14px;
+  color: #757575;
+  margin-top: 4px;
+}
+.sort-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #252525;
+}
+.sort-control label { font-weight: 600; white-space: nowrap; }
+.sort-select {
+  padding: 7px 30px 7px 12px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  background: white;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23757575' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  cursor: pointer;
+}
+.sort-select:focus { outline: none; border-color: #4a7fd4; }
+
+/* ── Filter chips ── */
+.filter-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  align-items: center;
+}
+.filter-label { font-size: 13px; font-weight: 600; color: #757575; margin-right: 2px; }
+.filter-chip {
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1.5px solid #ddd;
+  background: white;
+  font-size: 13px;
+  color: #252525;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  display: flex; align-items: center; gap: 6px;
+}
+.filter-chip:hover { border-color: #252525; }
+.filter-chip.active {
+  background: #252525;
+  color: white;
+  border-color: #252525;
+}
+.filter-chip .chip-x {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+/* ── Product grid ── */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+@media (max-width: 1100px) { .product-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 740px)  { .product-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; } }
+@media (max-width: 440px)  { .product-grid { grid-template-columns: 1fr; } }
+
+/* ── Product card ── */
+.product-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: box-shadow 0.2s, transform 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.product-card:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.13);
+  transform: translateY(-2px);
+}
+
+/* Image area */
+.card-img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #f8f8f8;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.card-img .shoe-svg {
+  width: 75%;
+  max-width: 180px;
+  opacity: 0.75;
+}
+.card-badges {
+  position: absolute;
+  top: 10px; left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.card-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  line-height: 1.5;
+}
+.badge-sale   { background: #e33e38; color: white; }
+.badge-trend  { background: #ee5720; color: white; }
+.badge-top    { background: #1a7a4c; color: white; }
+.card-fav {
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 30px; height: 30px;
+  background: white;
+  border-radius: 50%;
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  color: #c5c5c5;
+  transition: color 0.15s;
+}
+.card-fav:hover { color: #e33e38; }
+
+/* Card body */
+.card-body {
+  padding: 12px 14px 16px;
+}
+.card-brand {
+  font-size: 11px;
+  font-weight: 700;
+  color: #757575;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 3px;
+}
+.card-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #252525;
+  line-height: 1.3;
+  margin-bottom: 3px;
+}
+.card-type {
+  font-size: 12px;
+  color: #9d9d9d;
+  margin-bottom: 8px;
+}
+.card-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.card-stars { display: flex; gap: 1px; }
+.card-star { color: #ee5720; font-size: 11px; line-height: 1; }
+.card-star.empty { color: #ddd; }
+.card-review-count { font-size: 12px; color: #0e5dbd; }
+.card-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.card-price { font-size: 18px; font-weight: 900; color: #252525; }
+.card-price-off {
+  background: #e33e38; color: white;
+  font-size: 11px; font-weight: 700;
+  padding: 1px 6px; border-radius: 4px;
+}
+.card-price-msrp { font-size: 13px; color: #9d9d9d; text-decoration: line-through; }
+.card-price-orig { font-size: 18px; font-weight: 900; color: #252525; }
+
+/* Partner badge on card */
+.card-partner-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: #4a7fd4;
+  font-weight: 600;
+}
+.card-partner-tag svg { flex-shrink: 0; }
+
+/* Highlight for target shoe */
+.product-card.target-shoe {
+  outline: 2px solid transparent;
+}
+</style>
+</head>
+<body>
+
+<!-- ── Site Header ─────────────────────────────────────────────────────────── -->
+<header class="site-header">
+  <div class="header-top">
+    <div class="ev-logo">
+      <svg width="14" height="16" viewBox="0 0 12 14" fill="none">
+        <path d="M7.5 1L1 8h5l-1.5 5L11 6H6.5L7.5 1z" fill="white"/>
+      </svg>
+    </div>
+    <span class="site-name">EV Sports</span>
+    <div class="header-search">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      Search brands &amp; more
+    </div>
+    <nav class="header-actions">
+      <a href="#">Sign In</a>
+      <button class="header-icon-btn" aria-label="Cart">
+        <svg width="20" height="20" viewBox="0 0 18 18" fill="none">
+          <path d="M1 1H3L4 4M4 4L6 12H14L16 4H4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="7" cy="15" r="1.5" fill="currentColor"/>
+          <circle cx="13" cy="15" r="1.5" fill="currentColor"/>
+        </svg>
+        <span class="header-badge">3</span>
+      </button>
+    </nav>
+  </div>
+  <div class="header-nav">
+    <div class="header-nav-inner">
+      <a href="#" class="nav-link">Home</a>
+      <a href="#" class="nav-link">Brands</a>
+      <a href="#" class="nav-link active">Running</a>
+      <a href="#" class="nav-link">Trail</a>
+      <a href="#" class="nav-link">Hiking</a>
+      <a href="#" class="nav-link">Cycling</a>
+      <a href="#" class="nav-link">Gym &amp; Training</a>
+      <a href="#" class="nav-link">Deals</a>
+    </div>
+  </div>
+</header>
+
+<!-- ── Breadcrumb ─────────────────────────────────────────────────────────── -->
+<div class="breadcrumb-bar">
+  <div class="breadcrumb-inner">
+    <a href="#">Home</a>
+    <span class="breadcrumb-sep">/</span>
+    <a href="#">Running</a>
+    <span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-current">Running Shoes</span>
+  </div>
+</div>
+
+<!-- ── Page content ─────────────────────────────────────────────────────────── -->
+<div class="page-content">
+
+  <div class="category-header">
+    <div class="category-title-group">
+      <h1 class="category-title">Running Shoes</h1>
+      <p class="category-count">9 products</p>
+    </div>
+    <div class="sort-control">
+      <label for="sort-select">Sort by</label>
+      <select id="sort-select" class="sort-select">
+        <option>Featured</option>
+        <option>Price: Low to High</option>
+        <option>Price: High to Low</option>
+        <option>Best Rated</option>
+        <option>Most Reviewed</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="filter-row">
+    <span class="filter-label">Filter:</span>
+    <button class="filter-chip active">Men's <span class="chip-x">✕</span></button>
+    <button class="filter-chip active">Road Running <span class="chip-x">✕</span></button>
+    <button class="filter-chip">Stability</button>
+    <button class="filter-chip">Trail</button>
+    <button class="filter-chip">On Sale</button>
+    <button class="filter-chip">Under $100</button>
+    <button class="filter-chip">$100 – $150</button>
+    <button class="filter-chip">$150+</button>
+  </div>
+
+  <!-- ── Product Grid ── -->
+  <div class="product-grid">
+
+    <!-- 1. Brooks Glycerin 23 -->
+    <a href="#" class="product-card" onclick="return false;">
+      <div class="card-img">
+        <img src="https://www.brooksrunning.com/dw/image/v2/BGPF_PRD/on/demandware.static/-/Sites-brooks-master-catalog/default/dwc09b7f44/original/110476/110476-420-l-glycerin-23-mens-dynamic-cushion-road-running-shoe.jpg?sw=1388&sh=868&sm=fit&sfrm=png&strip=false&bgcolor=F8F8F8" alt="Brooks Glycerin 23">
+        <div class="card-badges"><span class="card-badge badge-trend">Trending</span></div>
+        <button class="card-fav" onclick="return false;" aria-label="Save"><svg width="14" height="14" viewBox="0 0 18 18" fill="none"><path d="M9 15.5C9 15.5 1.5 11 1.5 5.5C1.5 3.57 3.07 2 5 2C6.54 2 7.86 2.95 8.5 4.28C9.14 2.95 10.46 2 12 2C13.93 2 15.5 3.57 15.5 5.5C15.5 11 9 15.5 9 15.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="card-body">
+        <div class="card-brand">Brooks Running</div>
+        <div class="card-name">Glycerin 23</div>
+        <div class="card-type">Road Running</div>
+        <div class="card-rating">
+          <div class="card-stars"><span class="card-star">★</span><span class="card-star">★</span><span class="card-star">★</span><span class="card-star">★</span><span class="card-star empty">★</span></div>
+          <span class="card-review-count">4 experts</span>
+        </div>
+        <div class="card-price-row">
+          <span class="card-price">$105.00</span>
+          <span class="card-price-msrp">$175.00</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 2. Brooks Ghost 17 -->
+    <a href="#" class="product-card" onclick="return false;">
+      <div class="card-img">
+        <img src="https://www.brooksrunning.com/dw/image/v2/BGPF_PRD/on/demandware.static/-/Sites-brooks-master-catalog/default/dwb3fea27b/original/110442/110442-048-l-ghost-17-mens-neutral-cushion-running-shoe.jpg?sw=1388&sh=868&sm=fit&sfrm=png&strip=false&bgcolor=F8F8F8" alt="Brooks Ghost 17">
+        <div class="card-badges"><span class="card-badge badge-trend">Trending</span></div>
+        <button class="card-fav" onclick="return false;" aria-label="Save"><svg width="14" height="14" viewBox="0 0 18 18" fill="none"><path d="M9 15.5C9 15.5 1.5 11 1.5 5.5C1.5 3.57 3.07 2 5 2C6.54 2 7.86 2.95 8.5 4.28C9.14 2.95 10.46 2 12 2C13.93 2 15.5 3.57 15.5 5.5C15.5 11 9 15.5 9 15.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="card-body">
+        <div class="card-brand">Brooks Running</div>
+        <div class="card-name">Ghost 17</div>
+        <div class="card-type">Road Running</div>
+        <div class="card-rating">
+          <div class="card-stars"><span class="card-star">★</span><span class="card-star">★</span><span class="card-star">★</span><span class="card-star">★</span><span class="card-star">★</span></div>
+          <span class="card-review-count">147 experts</span>
+        </div>
+        <div class="card-price-row">
+          <span class="card-price">$90.00</span>
+          <span class="card-price-msrp">$150.00</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 3. Brooks Ghost Max 3 -->
+    <a href="#" class="product-card" onclick="return false;">
+      <div class="card-img">
+        <img src="https://www.brooksrunning.com/dw/image/v2/BGPF_PRD/on/demandware.static/-/Sites-brooks-master-catalog/default/dw347f8460/original/110464/110464-488-l-ghost-max-3-mens-max-cushion-road-running-shoe.jpg?sw=1388&sh=868&sm=fit&sfrm=png&strip=false&bgcolor=F8F8F8" alt="Brooks Ghost Max 3">
+        <div class="card-badges"><span class="card-badge badge-trend">Trending</span></div>
+        <button class="card-fav" onclick="return false;" aria-label="Save"><svg width="14" height="14" viewBox="0 0 18 18" fill="none"><path d="M9 15.5C9 15.5 1.5 11 1.5 5.5C1.5 3.57 3.07 2 5 2C6.54 2 7.86 2.95 8.5 4.28C9.14 2.95 10.46 2 12 2C13.93 2 15.5 3.57 15.5 5.5C15.5 11 9 15.5 9 15.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="card-body">
+        <div class="card-brand">Brooks Running</div>
+        <div class="card-name">Ghost Max 3</div>
+        <div class="card-type">Max Cushion Road Running</div>
+        <div class="card-rating">
+          <div class="card-stars"><span class="card-star">★</span><span class="card-star">★</span><span class="card-star">★</span><span class="card-star">★</span><span class="card-star">★</span></div>
+          <span class="card-review-count">47 experts</span>
+        </div>
+        <div class="card-price-row">
+          <span class="card-price">$96.00</span>
+          <span class="card-price-msrp">$160.00</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 4. Brooks Glycerin GTS 23 -->
+    <a href="#" class="product-card" onclick="return false;">
+      <div class="card-img">
+        <img src="https://www.brooksrunning.com/dw/image/v2/BGPF_PRD/on/demandware.static/-/Sites-brooks-master-catalog/default/dwe25d5bc3/original/110503/110503-154-l-glycerin-gts-23-mens-supportive-cushion-road-running-shoe.jpg?sw=1388&sh=868&sm=fit&sfrm=png&strip=false&bgcolor=F8F8F8" alt="Brooks Glycerin GTS 23">
+        <div class="card-badges"><span class="card-badge badge-trend">Trending</span></div>
+        <button class="card-fav" onclick="return false;" aria-label="Save"><svg width="14" height="14" viewBox="0 0 18 18" fill="none"><path d="M9 15.5C9 15.5 1.5 11 1.5 5.5C1.5 3.57 3.07 2 5 2C6.54 2 7.86 2.95 8.5 4.28C9.14 2.95 10.46 2 12 2C13.93 2 15.5 3.57 15.5 5.5C15.5 11 9 15.5 9 15.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="card-body">
+        <div class="card-brand">Brooks Running</div>
+        <div class="card-name">Glycerin GTS 23</div>
+        <div class="card-type">Supportive Road Running</div>
+        <div class="card-rating">
+          <div class="card-stars"><span class="card-star">★</span><span class="card-star">★</span><span class="card-star">★</span><span class="card-star empty">★</span><span class="card-star empty">★</span></div>
+          <span class="card-review-count">3 experts</span>
+        </div>
+        <div class="card-price-row">
+          <span class="card-price">$108.00</span>
+          <span class="card-price-msrp">$180.00</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 5. Brooks Beast GTS 26 -->
+    <a href="#" class="product-card" onclick="return false;">
+      <div class="card-img">
+        <img src="https://www.brooksrunning.com/dw/image/v2/BGPF_PRD/on/demandware.static/-/Sites-brooks-master-catalog/default/dwdafe5b67/original/110455/110455-422-l-beast-gts-26-mens-high-support-running-walking-shoe.jpg?sw=1388&sh=868&sm=fit&sfrm=png&strip=false&bgcolor=F8F8F8" alt="Brooks Beast GTS 26">
+        <div class="card-badges">
+          <span class="card-badge badge-sale">Extra Savings</span>
+          <span class="card-badge badge-trend">Trending</span>
+        </div>
+        <button class="card-fav" onclick="return false;" aria-label="Save"><svg width="14" height="14" viewBox="0 0 18 18" fill="none"><path d="M9 15.5C9 15.5 1.5 11 1.5 5.5C1.5 3.57 3.07 2 5 2C6.54 2 7.86 2.95 8.5 4.28C9.14 2.95 10.46 2 12 2C13.93 2 15.5 3.57 15.5 5.5C15.5 11 9 15.5 9 15.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="card-body">
+        <div class="card-brand">Brooks Running</div>
+        <div class="card-name">Beast GTS 26</div>
+        <div class="card-type">High Support Running</div>
+        <div class="card-rating">
+          <div class="card-stars"><span class="card-star empty">★</span><span class="card-star empty">★</span><span class="card-star empty">★</span><span class="card-star empty">★</span><span class="card-star empty">★</span></div>
+          <span class="card-review-count">Be the first to review</span>
+        </div>
+        <div class="card-price-row">
+          <span class="card-price">$85.00</span>
+          <span class="card-price-msrp">$170.00</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 6. Brooks Adrenaline GTS 25 — TARGET SHOE -->
+    <a href="#" class="product-card target-shoe" id="brooks-card">
+      <div class="card-img">
+        <img src="https://www.brooksrunning.com/dw/image/v2/BGPF_PRD/on/demandware.static/-/Sites-brooks-master-catalog/default/dwcec84b4a/original/110454/110454-020-l-adrenaline-gts-25-mens-dynamic-cushion-road-running-shoe.jpg?sw=1388&sh=868&sm=fit&sfrm=png&strip=false&bgcolor=F8F8F8" alt="Brooks Adrenaline GTS 25">
+        <div class="card-badges">
+          <span class="card-badge badge-sale">40% Off</span>
+          <span class="card-badge badge-trend">Trending</span>
+        </div>
+        <button class="card-fav" onclick="return false;" aria-label="Save"><svg width="14" height="14" viewBox="0 0 18 18" fill="none"><path d="M9 15.5C9 15.5 1.5 11 1.5 5.5C1.5 3.57 3.07 2 5 2C6.54 2 7.86 2.95 8.5 4.28C9.14 2.95 10.46 2 12 2C13.93 2 15.5 3.57 15.5 5.5C15.5 11 9 15.5 9 15.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="card-body">
+        <div class="card-brand">Brooks Running</div>
+        <div class="card-name">Adrenaline GTS 25</div>
+        <div class="card-type">Stability Road Running</div>
+        <div class="card-rating">
+          <div class="card-stars"><span class="card-star">★</span><span class="card-star">★</span><span class="card-star">★</span><span class="card-star">★</span><span class="card-star empty">★</span></div>
+          <span class="card-review-count">25 experts</span>
+        </div>
+        <div class="card-price-row">
+          <span class="card-price">$90.00</span>
+          <span class="card-price-msrp">$150.00</span>
+        </div>
+        <div class="card-partner-tag">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1L1.5 8.5h3L3 9.5 8.5 2H5.5L5 1z" fill="#4a7fd4"/></svg>
+          Ships from Brooks Running
+        </div>
+      </div>
+    </a>
+
+    <!-- 7. Mount to Coast H1 -->
+    <a href="#" class="product-card" onclick="return false;">
+      <div class="card-img">
+        <img src="https://mounttocoast.com/cdn/shop/files/product_h1_joshua_tree_001_9907e340-894e-408b-beb2-8b50aa40b669.webp?v=1758804288" alt="Mount to Coast H1">
+        <div class="card-badges"><span class="card-badge badge-trend">Trending</span></div>
+        <button class="card-fav" onclick="return false;" aria-label="Save"><svg width="14" height="14" viewBox="0 0 18 18" fill="none"><path d="M9 15.5C9 15.5 1.5 11 1.5 5.5C1.5 3.57 3.07 2 5 2C6.54 2 7.86 2.95 8.5 4.28C9.14 2.95 10.46 2 12 2C13.93 2 15.5 3.57 15.5 5.5C15.5 11 9 15.5 9 15.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="card-body">
+        <div class="card-brand">Mount to Coast</div>
+        <div class="card-name">H1</div>
+        <div class="card-type">Hybrid Road / Trail</div>
+        <div class="card-rating">
+          <div class="card-stars"><span class="card-star">★</span><span class="card-star">★</span><span class="card-star">★</span><span class="card-star">★</span><span class="card-star empty">★</span></div>
+          <span class="card-review-count">6 experts</span>
+        </div>
+        <div class="card-price-row">
+          <span class="card-price">$112.00</span>
+          <span class="card-price-msrp">$160.00</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 8. Brooks Cascadia 19 -->
+    <a href="#" class="product-card" onclick="return false;">
+      <div class="card-img">
+        <img src="https://www.brooksrunning.com/dw/image/v2/BGPF_PRD/on/demandware.static/-/Sites-brooks-master-catalog/default/dw0d39bfad/original/110457/110457-098-l-cascadia-19-mens-mountain-trail-trail-running-shoe.jpg?sw=1388&sh=868&sm=fit&sfrm=png&strip=false&bgcolor=F8F8F8" alt="Brooks Cascadia 19">
+        <div class="card-badges"><span class="card-badge badge-trend">Trending</span></div>
+        <button class="card-fav" onclick="return false;" aria-label="Save"><svg width="14" height="14" viewBox="0 0 18 18" fill="none"><path d="M9 15.5C9 15.5 1.5 11 1.5 5.5C1.5 3.57 3.07 2 5 2C6.54 2 7.86 2.95 8.5 4.28C9.14 2.95 10.46 2 12 2C13.93 2 15.5 3.57 15.5 5.5C15.5 11 9 15.5 9 15.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="card-body">
+        <div class="card-brand">Brooks Running</div>
+        <div class="card-name">Cascadia 19</div>
+        <div class="card-type">Trail Running</div>
+        <div class="card-rating">
+          <div class="card-stars"><span class="card-star">★</span><span class="card-star">★</span><span class="card-star">★</span><span class="card-star">★</span><span class="card-star">★</span></div>
+          <span class="card-review-count">19 experts</span>
+        </div>
+        <div class="card-price-row">
+          <span class="card-price">$90.00</span>
+          <span class="card-price-msrp">$150.00</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 9. Saucony Endorphin Elite 2 -->
+    <a href="#" class="product-card" onclick="return false;">
+      <div class="card-img">
+        <img src="https://www.runningxpert.com/media/catalog/product/cache/e1bfa30f5f000aa573b2ee969a7a0fde/3/0/30994-130.jpg" alt="Saucony Endorphin Elite 2">
+        <div class="card-badges"><span class="card-badge badge-trend">Trending</span></div>
+        <button class="card-fav" onclick="return false;" aria-label="Save"><svg width="14" height="14" viewBox="0 0 18 18" fill="none"><path d="M9 15.5C9 15.5 1.5 11 1.5 5.5C1.5 3.57 3.07 2 5 2C6.54 2 7.86 2.95 8.5 4.28C9.14 2.95 10.46 2 12 2C13.93 2 15.5 3.57 15.5 5.5C15.5 11 9 15.5 9 15.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="card-body">
+        <div class="card-brand">Saucony</div>
+        <div class="card-name">Endorphin Elite 2</div>
+        <div class="card-type">Carbon Plate Racing</div>
+        <div class="card-rating">
+          <div class="card-stars"><span class="card-star empty">★</span><span class="card-star empty">★</span><span class="card-star empty">★</span><span class="card-star empty">★</span><span class="card-star empty">★</span></div>
+          <span class="card-review-count">Be the first to review</span>
+        </div>
+        <div class="card-price-row">
+          <span class="card-price">$174.00</span>
+          <span class="card-price-msrp">$290.00</span>
+        </div>
+      </div>
+    </a>
+
+  </div><!-- /.product-grid -->
+
+</div><!-- /.page-content -->
+
+<script>
+// Build the PDP URL, forwarding mode if present
+function pdpUrl() {
+  const p = new URLSearchParams(window.location.search);
+  const dest = new URLSearchParams({ from: 'plp', product: 'shoe' });
+  const mode = p.get('mode');
+  if (mode) dest.set('mode', mode);
+  return 'pdp-sku-inventory-desktop.html?' + dest.toString();
+}
+
+// Query param routing:
+// ?view=pdp  → go directly to the PDP (for researcher/demo use)
+// ?view=list or no param → show this list (default)
+// ?mode=card|accordion|info|select → forwarded to PDP on card click or ?view=pdp
+(function() {
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('view') === 'pdp') {
+    window.location.replace(pdpUrl());
+  }
+  document.getElementById('brooks-card').href = pdpUrl();
+})();
+
+// Filter chips: toggle active state (decorative in prototype)
+document.querySelectorAll('.filter-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    chip.classList.toggle('active');
+    const x = chip.querySelector('.chip-x');
+    if (chip.classList.contains('active') && !x) {
+      const span = document.createElement('span');
+      span.className = 'chip-x';
+      span.textContent = '✕';
+      chip.appendChild(span);
+    } else if (!chip.classList.contains('active') && x) {
+      x.remove();
+    }
+  });
+});
+
+// Fav buttons: prevent card navigation on click
+document.querySelectorAll('.card-fav').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    btn.style.color = btn.style.color === 'rgb(227, 62, 56)' ? '' : '#e33e38';
+  });
+});
+</script>
+</body>
+</html>
