@@ -308,7 +308,19 @@ body {
 .mode-card .avail-note    { display: none; }
 .mode-info .avail-note    { display: none; }
 .mode-card .select-header { display: none; }
-.mode-card .size-tooltip  { display: none !important; }
+.mode-card .size-tooltip  { display: none; }
+.mode-card .size-tooltip.visible { display: flex; align-items: flex-start; gap: 10px; }
+@keyframes cardMsgIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.card-info-message {
+  display: none;
+  background: #ddeaf8; border: 1px solid #4a7fd4; border-radius: 8px;
+  padding: 10px 12px; font-size: 13px; color: #1a3a5c; line-height: 1.4;
+  margin-bottom: 14px;
+}
+.card-info-message.visible { display: block; animation: cardMsgIn 0.25s ease both; }
 .mode-card .accordion-footer-note { display: none; }
 .mode-card .avail-section { background: none; border: none; padding: 0; }
 
@@ -955,24 +967,19 @@ body {
         <div class="attrs-wrapper" id="jacket-attrs-wrapper">
           <button class="accordion-header" id="jacket-accordion-header">
             <span class="accordion-label-default">Preview options &amp; availability</span>
-            <span class="accordion-label-card">Preview options available on Outdoor Research</span>
+            <span class="accordion-label-card">Preview available options</span>
             <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M4 6l4 4 4-4" stroke="#252525" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
           <div class="attrs-body">
+            <div class="card-info-message" id="jacket-card-info-msg">For informational purposes only. Purchased on outdoorresearch.com.</div>
             <div class="option-label"><span class="label-default">Color: </span><span class="label-available">Preview colors on Outdoor Research:</span> <strong id="jacket-card-color-label"></strong></div>
             <div class="color-swatches" id="jacket-card-color-swatches" style="margin-bottom:16px;"></div>
             <div class="size-label-row">
               <div class="option-label" style="margin-bottom:0;"><span class="label-default">Size<span class="size-val-inline" id="jacket-size-val"></span></span><span class="label-available">Preview sizes on Outdoor Research</span></div>
             </div>
             <div class="size-btns" id="size-btns"></div>
-            <div class="size-tooltip-wrap">
-              <div class="size-tooltip" id="size-tooltip">
-                <span class="size-tooltip-text">Size selection happens on Outdoor Research's site. Use this page to check what's available before you visit.</span>
-                <button class="size-tooltip-close" id="size-tooltip-close" aria-label="Dismiss">&#x2715;</button>
-              </div>
-            </div>
             <div class="accordion-footer-note">Purchased on outdoorresearch.com · your selections won't carry over.</div>
           </div>
         </div>
@@ -1157,12 +1164,13 @@ body {
         <div class="attrs-wrapper" id="shoe-attrs-wrapper">
           <button class="accordion-header" id="shoe-accordion-header">
             <span class="accordion-label-default">Preview options &amp; availability</span>
-            <span class="accordion-label-card">Preview options available on Brooks Running</span>
+            <span class="accordion-label-card">Preview available options</span>
             <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M4 6l4 4 4-4" stroke="#252525" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
           <div class="attrs-body">
+            <div class="card-info-message" id="shoe-card-info-msg">For informational purposes only. Purchased on brooksrunning.com.</div>
             <div class="option-label"><span class="label-default">Color: </span><span class="label-available">Preview colors on Brooks Running:</span> <strong id="shoe-card-color-label"></strong></div>
             <div class="color-swatches" id="shoe-card-color-swatches" style="margin-bottom:16px;"></div>
             <div class="size-label-row">
@@ -1171,12 +1179,6 @@ body {
             <div class="size-btns" id="shoe-size-btns"></div>
             <div class="option-label" style="margin-top:14px;"><span class="label-default">Width<span class="size-val-inline" id="shoe-width-val"></span></span><span class="label-available">Preview widths on Brooks Running</span></div>
             <div class="size-btns" id="shoe-width-btns"></div>
-            <div class="size-tooltip-wrap">
-              <div class="size-tooltip" id="shoe-size-tooltip">
-                <span class="size-tooltip-text">Size and width selection happens on Brooks Running's site. Use this page to check what's available before you visit.</span>
-                <button class="size-tooltip-close" id="shoe-size-tooltip-close" aria-label="Dismiss">&#x2715;</button>
-              </div>
-            </div>
             <div class="accordion-footer-note">Purchased on brooksrunning.com · your selections won't carry over.</div>
           </div>
         </div>
@@ -1335,6 +1337,10 @@ function renderSizes() {
           if (displayMode === 'select' || displayMode === 'card') {
             selectedJacketSize = selectedJacketSize === s ? null : s;
             renderSizes();
+            if (displayMode === 'card' && !jacketCardTooltipShown) {
+              jacketCardTooltipShown = true;
+              showSizeTooltip();
+            }
           } else {
             showSizeTooltip();
           }
@@ -1350,8 +1356,11 @@ function renderSizes() {
 }
 
 function showSizeTooltip() {
-  const id = displayMode === 'info' ? 'jacket-info-size-tooltip' : 'size-tooltip';
-  document.getElementById(id).classList.add('visible');
+  if (displayMode === 'info') {
+    document.getElementById('jacket-info-size-tooltip').classList.add('visible');
+  } else if (displayMode === 'card') {
+    document.getElementById('jacket-card-info-msg').classList.add('visible');
+  }
 }
 
 
@@ -1380,9 +1389,6 @@ function selectColor(id) {
 document.querySelectorAll('.phone').forEach(p => p.classList.add('mode-select'));
 render();
 
-document.getElementById('size-tooltip-close').addEventListener('click', () => {
-  document.getElementById('size-tooltip').classList.remove('visible');
-});
 document.getElementById('jacket-info-size-tooltip-close').addEventListener('click', () => {
   document.getElementById('jacket-info-size-tooltip').classList.remove('visible');
 });
@@ -1408,6 +1414,8 @@ document.getElementById('jacket-accordion-header').addEventListener('click', () 
 // ── Mode ───────────────────────────────────────────────────────────────────
 let jacketAccordionOpen = false;
 let shoeAccordionOpen = false;
+let jacketCardTooltipShown = false;
+let shoeCardTooltipShown = false;
 
 function setMode(mode) {
   displayMode = mode;
@@ -1430,6 +1438,10 @@ function setMode(mode) {
   selectedJacketSize = null;
   selectedShoeSize = null;
   selectedShoeWidth = null;
+  jacketCardTooltipShown = false;
+  shoeCardTooltipShown = false;
+  document.getElementById('jacket-card-info-msg').classList.remove('visible');
+  document.getElementById('shoe-card-info-msg').classList.remove('visible');
   render();
   renderShoe();
 }
@@ -1699,6 +1711,10 @@ function renderShoeSizes() {
             selectedShoeSize = selectedShoeSize === s ? null : s;
             renderShoeSizes();
             renderShoeWidths();
+            if (displayMode === 'card' && !shoeCardTooltipShown) {
+              shoeCardTooltipShown = true;
+              showShoeSizeTooltip();
+            }
           } else {
             showShoeSizeTooltip();
           }
@@ -1734,6 +1750,10 @@ function renderShoeWidths() {
             selectedShoeWidth = selectedShoeWidth === w ? null : w;
             renderShoeWidths();
             renderShoeSizes();
+            if (displayMode === 'card' && !shoeCardTooltipShown) {
+              shoeCardTooltipShown = true;
+              showShoeSizeTooltip();
+            }
           } else {
             showShoeSizeTooltip();
           }
@@ -1773,13 +1793,13 @@ function selectShoeColor(id) {
 }
 
 function showShoeSizeTooltip() {
-  const id = displayMode === 'info' ? 'shoe-info-size-tooltip' : 'shoe-size-tooltip';
-  document.getElementById(id).classList.add('visible');
+  if (displayMode === 'info') {
+    document.getElementById('shoe-info-size-tooltip').classList.add('visible');
+  } else if (displayMode === 'card') {
+    document.getElementById('shoe-card-info-msg').classList.add('visible');
+  }
 }
 
-document.getElementById('shoe-size-tooltip-close').addEventListener('click', () => {
-  document.getElementById('shoe-size-tooltip').classList.remove('visible');
-});
 document.getElementById('shoe-info-size-tooltip-close').addEventListener('click', () => {
   document.getElementById('shoe-info-size-tooltip').classList.remove('visible');
 });
